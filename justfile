@@ -4,8 +4,6 @@
 set dotenv-load := false
 
 version := `cargo get package.version 2>/dev/null || echo 'unknown'`
-os := `uname -s | tr '[:upper:]' '[:lower:]'`
-arch := `uname -m`
 
 # ─── Default ──────────────────────────────────────────────────────────
 
@@ -153,43 +151,57 @@ ci-test:
 
 # ─── Release ──────────────────────────────────────────────────────────
 
-# Bump version, tag, push, and publish to crates.io
-release LEVEL:
+# Release quality gate (fmt + clippy + test)
+release-check:
+    cargo fmt --check
+    cargo clippy --all-targets --all-features -- -D warnings
+    cargo test
+
+# Preview what a release would do without changing anything
+release-dry-run LEVEL:
     #!/usr/bin/env bash
     set -euo pipefail
-    if [[ "{{LEVEL}}" != "patch" && "{{LEVEL}}" != "minor" && "{{LEVEL}}" != "major" ]]; then
-        echo "Usage: just release [patch|minor|major]"
-        exit 1
+    if [[ ! "{{LEVEL}}" =~ ^(patch|minor|major)$ ]]; then
+        echo "Usage: just release-dry-run patch|minor|major"; exit 1
     fi
-    echo "Creating {{LEVEL}} release..."
-    cargo set-version --bump {{LEVEL}}
-    cargo check
-    git add Cargo.toml Cargo.lock
-    git commit -m "Bump version for {{LEVEL}} release"
-    VERSION="$(cargo get package.version)"
-    git tag -a "v${VERSION}" -m "Release v${VERSION}"
-    echo "Pushing to origin..."
-    git push origin main
-    git push origin "v${VERSION}"
-    echo "Publishing to crates.io..."
-    cargo publish
-    echo "Released v${VERSION}"
+    CURRENT=$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)
+    echo "Current version: $CURRENT"
+    echo "Bump level: {{LEVEL}}"
+    just release-check
+    echo ""
+    echo "All checks passed. Run: just release {{LEVEL}}"
 
-# Build a distributable zipfile for the current platform
-dist:
+# Bump version, create release branch + PR (requires: cargo-set-version, gh)
+release LEVEL: release-check
     #!/usr/bin/env bash
     set -euo pipefail
-    echo "Building release binary..."
-    cargo build --release
-    mkdir -p dist
-    cp target/release/zackstrap dist/
-    ZIPNAME="zackstrap-{{version}}-{{os}}-{{arch}}.zip"
-    cd dist && zip -r "$ZIPNAME" zackstrap
-    echo "dist/$ZIPNAME"
-
-# Dry-run a crates.io publish (validates packaging without uploading)
-publish-dry-run:
-    cargo publish --dry-run
+    if [[ ! "{{LEVEL}}" =~ ^(patch|minor|major)$ ]]; then
+        echo "Usage: just release patch|minor|major"; exit 1
+    fi
+    if [[ -n "$(git status --porcelain)" ]]; then
+        echo "Error: dirty working tree"; exit 1
+    fi
+    BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    if [[ "$BRANCH" != "main" ]]; then
+        echo "Error: must be on main (currently on $BRANCH)"; exit 1
+    fi
+    git pull --ff-only origin main
+    cargo set-version --bump {{LEVEL}}
+    cargo check --quiet
+    VERSION=$(grep '^version' Cargo.toml | head -1 | cut -d'"' -f2)
+    git checkout -b "release/v${VERSION}"
+    git add Cargo.toml Cargo.lock
+    git commit -m "release: v${VERSION}"
+    git push -u origin "release/v${VERSION}"
+    gh pr create \
+        --title "release: v${VERSION}" \
+        --body "Bump to v${VERSION} ({{LEVEL}} release)" \
+        --base main
+    echo ""
+    echo "PR created. Next steps:"
+    echo "  gh pr checks           # watch CI"
+    echo "  gh pr merge --squash --delete-branch"
+    echo "  gh run watch           # watch release workflow"
 
 # ─── Cleanup ──────────────────────────────────────────────────────────
 
