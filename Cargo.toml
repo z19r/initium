@@ -1,6 +1,6 @@
 [package]
 name = "zackstrap"
-version = "1.7.0"
+version = "1.8.0"
 edition = "2021"
 authors = ["Zack Kitzmiller"]
 description = "A CLI tool to bootstrap project configuration files"
