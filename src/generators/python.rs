@@ -6,10 +6,7 @@ impl super::ConfigGenerator {
         self.generate_python_with_template("default").await
     }
 
-    pub async fn generate_python_with_template(
-        &self,
-        template: &str,
-    ) -> Result<(), InitiumError> {
+    pub async fn generate_python_with_template(&self, template: &str) -> Result<(), InitiumError> {
         // Generate basic configs first
         self.generate_basic_with_template(false, template).await?;
 

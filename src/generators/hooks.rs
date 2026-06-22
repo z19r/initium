@@ -93,11 +93,7 @@ impl GitHooksGenerator {
         Ok(())
     }
 
-    pub async fn generate_go_hooks(
-        &self,
-        template: &str,
-        force: bool,
-    ) -> Result<(), InitiumError> {
+    pub async fn generate_go_hooks(&self, template: &str, force: bool) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         if !hooks_dir.exists() {

@@ -1,5 +1,5 @@
-use std::path::PathBuf;
 use initium::ConfigGenerator;
+use std::path::PathBuf;
 
 #[test]
 fn test_all_python_templates() {

@@ -1,6 +1,6 @@
-use std::path::PathBuf;
 use initium::ConfigGenerator;
 use initium::PackageJson;
+use std::path::PathBuf;
 
 #[test]
 fn test_pyproject_toml_content_generation() {
