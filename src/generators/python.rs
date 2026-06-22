@@ -1,15 +1,15 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 
 impl super::ConfigGenerator {
     #[allow(dead_code)]
-    pub async fn generate_python(&self) -> Result<(), ZackstrapError> {
+    pub async fn generate_python(&self) -> Result<(), InitiumError> {
         self.generate_python_with_template("default").await
     }
 
     pub async fn generate_python_with_template(
         &self,
         template: &str,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         // Generate basic configs first
         self.generate_basic_with_template(false, template).await?;
 
@@ -25,13 +25,13 @@ impl super::ConfigGenerator {
         Ok(())
     }
 
-    async fn generate_python_version(&self) -> Result<(), ZackstrapError> {
+    async fn generate_python_version(&self) -> Result<(), InitiumError> {
         let content = "3.12\n";
         self.emit_file(".python-version", content, false, false)
             .await
     }
 
-    async fn generate_pyproject_toml(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_pyproject_toml(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "django" => {
                 r#"[build-system]
@@ -163,7 +163,7 @@ strict = true
             .await
     }
 
-    async fn generate_flake8_config(&self) -> Result<(), ZackstrapError> {
+    async fn generate_flake8_config(&self) -> Result<(), InitiumError> {
         let content = r#"[flake8]
 max-line-length = 88
 extend-ignore = E203, W503
@@ -172,7 +172,7 @@ exclude = .git,__pycache__,build,dist,.venv,venv
         self.emit_file(".flake8", content, false, false).await
     }
 
-    async fn generate_requirements_dev(&self) -> Result<(), ZackstrapError> {
+    async fn generate_requirements_dev(&self) -> Result<(), InitiumError> {
         let content = r#"# Development dependencies
 pytest==7.4.4
 black==23.12.1
@@ -184,7 +184,7 @@ pytest-cov==4.1.0
             .await
     }
 
-    async fn generate_python_justfile(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_python_justfile(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "django" => {
                 r#"# Django project justfile

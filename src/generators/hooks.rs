@@ -1,4 +1,4 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 use std::path::PathBuf;
 use tokio::fs;
 
@@ -15,12 +15,12 @@ impl GitHooksGenerator {
         &self,
         template: &str,
         force: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         // Ensure .git/hooks directory exists
         if !hooks_dir.exists() {
-            return Err(ZackstrapError::GitNotInitialized);
+            return Err(InitiumError::GitNotInitialized);
         }
 
         // Generate pre-commit hook
@@ -45,11 +45,11 @@ impl GitHooksGenerator {
         &self,
         template: &str,
         force: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         if !hooks_dir.exists() {
-            return Err(ZackstrapError::GitNotInitialized);
+            return Err(InitiumError::GitNotInitialized);
         }
 
         let pre_commit_content = self.get_python_pre_commit_hook(template);
@@ -71,11 +71,11 @@ impl GitHooksGenerator {
         &self,
         template: &str,
         force: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         if !hooks_dir.exists() {
-            return Err(ZackstrapError::GitNotInitialized);
+            return Err(InitiumError::GitNotInitialized);
         }
 
         let pre_commit_content = self.get_node_pre_commit_hook(template);
@@ -97,11 +97,11 @@ impl GitHooksGenerator {
         &self,
         template: &str,
         force: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         if !hooks_dir.exists() {
-            return Err(ZackstrapError::GitNotInitialized);
+            return Err(InitiumError::GitNotInitialized);
         }
 
         let pre_commit_content = self.get_go_pre_commit_hook(template);
@@ -123,11 +123,11 @@ impl GitHooksGenerator {
         &self,
         template: &str,
         force: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         if !hooks_dir.exists() {
-            return Err(ZackstrapError::GitNotInitialized);
+            return Err(InitiumError::GitNotInitialized);
         }
 
         let pre_commit_content = self.get_rust_pre_commit_hook(template);
@@ -149,11 +149,11 @@ impl GitHooksGenerator {
         &self,
         template: &str,
         force: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         if !hooks_dir.exists() {
-            return Err(ZackstrapError::GitNotInitialized);
+            return Err(InitiumError::GitNotInitialized);
         }
 
         let pre_commit_content = self.get_bash_pre_commit_hook(template);
@@ -171,11 +171,11 @@ impl GitHooksGenerator {
         Ok(())
     }
 
-    pub async fn generate_basic_hooks(&self, force: bool) -> Result<(), ZackstrapError> {
+    pub async fn generate_basic_hooks(&self, force: bool) -> Result<(), InitiumError> {
         let hooks_dir = self.target_dir.join(".git").join("hooks");
 
         if !hooks_dir.exists() {
-            return Err(ZackstrapError::GitNotInitialized);
+            return Err(InitiumError::GitNotInitialized);
         }
 
         let pre_commit_content = self.get_basic_pre_commit_hook();
@@ -198,9 +198,9 @@ impl GitHooksGenerator {
         path: &PathBuf,
         content: &str,
         force: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         if path.exists() && !force {
-            return Err(ZackstrapError::FileExists(path.clone()));
+            return Err(InitiumError::FileExists(path.clone()));
         }
 
         fs::write(path, content).await?;

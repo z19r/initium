@@ -1,6 +1,6 @@
 use std::path::PathBuf;
-use zackstrap::ConfigGenerator;
-use zackstrap::PackageJson;
+use initium::ConfigGenerator;
+use initium::PackageJson;
 
 #[test]
 fn test_pyproject_toml_content_generation() {

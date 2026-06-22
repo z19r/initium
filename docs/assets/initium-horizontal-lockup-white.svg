@@ -1,0 +1,15 @@
+<svg width="1120" height="300" viewBox="0 0 1120 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="40" y1="36" x2="240" y2="264" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A855F7"/>
+      <stop offset=".48" stop-color="#7C4DFF"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(20 20) scale(.48)">
+    <path d="M256 72 392 150v156l-57 33v-60l5-3V180l-84-49-84 49v96l5 3v60l-57-33V150L256 72Z" fill="url(#g)"/>
+    <path d="M214 220h84v190l-42 30-42-30V220Z" fill="url(#g)"/>
+    <path d="M256 150 292 171v42l-36 21-36-21v-42l36-21Z" fill="url(#g)"/>
+  </g>
+  <text x="300" y="187" font-family="Inter, Manrope, Avenir Next, Arial, sans-serif" font-size="142" font-weight="750" letter-spacing="-6" fill="#FFFFFF">initium</text>
+</svg>

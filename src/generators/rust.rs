@@ -1,12 +1,12 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 
 impl super::ConfigGenerator {
     #[allow(dead_code)]
-    pub async fn generate_rust(&self) -> Result<(), ZackstrapError> {
+    pub async fn generate_rust(&self) -> Result<(), InitiumError> {
         self.generate_rust_with_template("default").await
     }
 
-    pub async fn generate_rust_with_template(&self, template: &str) -> Result<(), ZackstrapError> {
+    pub async fn generate_rust_with_template(&self, template: &str) -> Result<(), InitiumError> {
         // Generate basic configs first
         self.generate_basic_with_template(false, template).await?;
 
@@ -21,7 +21,7 @@ impl super::ConfigGenerator {
         Ok(())
     }
 
-    async fn generate_rustfmt_config(&self) -> Result<(), ZackstrapError> {
+    async fn generate_rustfmt_config(&self) -> Result<(), InitiumError> {
         let content = r#"# Rustfmt configuration
 edition = "2021"
 max_width = 100
@@ -32,7 +32,7 @@ use_small_heuristics = "Default"
         self.emit_file("rustfmt.toml", content, false, false).await
     }
 
-    async fn generate_clippy_config(&self) -> Result<(), ZackstrapError> {
+    async fn generate_clippy_config(&self) -> Result<(), InitiumError> {
         let content = r#"# Clippy configuration
 # Threshold settings for common lints
 
@@ -47,7 +47,7 @@ max-fn-params-bools = 3
         self.emit_file(".clippy.toml", content, false, false).await
     }
 
-    async fn generate_cargo_config(&self) -> Result<(), ZackstrapError> {
+    async fn generate_cargo_config(&self) -> Result<(), InitiumError> {
         let content = r#"[build]
 # Set the target directory
 target = "target"
@@ -84,7 +84,7 @@ codegen-units = 1
             .await
     }
 
-    async fn generate_rust_justfile(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_rust_justfile(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "web" => {
                 r#"# Rust web project justfile

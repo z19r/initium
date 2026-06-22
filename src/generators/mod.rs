@@ -1,4 +1,4 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 use std::path::PathBuf;
 
 // Module declarations
@@ -47,7 +47,7 @@ impl ConfigGenerator {
         }
     }
 
-    pub async fn detect_project_type(&self) -> Result<ProjectType, ZackstrapError> {
+    pub async fn detect_project_type(&self) -> Result<ProjectType, InitiumError> {
         // Check for Ruby project
         if self.target_dir.join("Gemfile").exists()
             || self.target_dir.join("Gemfile.lock").exists()
@@ -114,7 +114,7 @@ impl ConfigGenerator {
         Ok(ProjectType::Basic)
     }
 
-    pub async fn interactive_setup(&self) -> Result<(), ZackstrapError> {
+    pub async fn interactive_setup(&self) -> Result<(), InitiumError> {
         // TODO: Implement interactive setup
         println!("🎯 Interactive setup not yet implemented, generating basic configuration...");
 

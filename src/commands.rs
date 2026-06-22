@@ -1,4 +1,4 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 use crate::generators::{hooks::GitHooksGenerator, ConfigGenerator, ProjectType};
 use colored::*;
 use std::path::PathBuf;
@@ -32,7 +32,7 @@ impl CommandHandler {
         ConfigGenerator::with_options(self.target_dir.clone(), self.dry_run, self.force)
     }
 
-    pub async fn handle_basic(&self, template: Option<String>) -> Result<(), ZackstrapError> {
+    pub async fn handle_basic(&self, template: Option<String>) -> Result<(), InitiumError> {
         let template_name = template.as_deref().unwrap_or("default");
         let generator = self.make_generator();
 
@@ -83,7 +83,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_ruby(&self, template: Option<String>) -> Result<(), ZackstrapError> {
+    pub async fn handle_ruby(&self, template: Option<String>) -> Result<(), InitiumError> {
         let template_name = template.as_deref().unwrap_or("default");
         let generator = self.make_generator();
 
@@ -145,7 +145,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_python(&self, template: Option<String>) -> Result<(), ZackstrapError> {
+    pub async fn handle_python(&self, template: Option<String>) -> Result<(), InitiumError> {
         let template_name = template.as_deref().unwrap_or("default");
         let generator = self.make_generator();
 
@@ -208,7 +208,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_node(&self, template: Option<String>) -> Result<(), ZackstrapError> {
+    pub async fn handle_node(&self, template: Option<String>) -> Result<(), InitiumError> {
         let template_name = template.as_deref().unwrap_or("default");
         let generator = self.make_generator();
 
@@ -269,7 +269,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_go(&self, template: Option<String>) -> Result<(), ZackstrapError> {
+    pub async fn handle_go(&self, template: Option<String>) -> Result<(), InitiumError> {
         let template_name = template.as_deref().unwrap_or("default");
         let generator = self.make_generator();
 
@@ -331,7 +331,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_rust(&self, template: Option<String>) -> Result<(), ZackstrapError> {
+    pub async fn handle_rust(&self, template: Option<String>) -> Result<(), InitiumError> {
         let template_name = template.as_deref().unwrap_or("default");
         let generator = self.make_generator();
 
@@ -393,7 +393,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_bash(&self, template: Option<String>) -> Result<(), ZackstrapError> {
+    pub async fn handle_bash(&self, template: Option<String>) -> Result<(), InitiumError> {
         let template_name = template.as_deref().unwrap_or("default");
         let generator = self.make_generator();
 
@@ -455,7 +455,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_auto(&self) -> Result<(), ZackstrapError> {
+    pub async fn handle_auto(&self) -> Result<(), InitiumError> {
         let generator = self.make_generator();
 
         if self.dry_run {
@@ -473,7 +473,7 @@ impl CommandHandler {
         &self,
         project_type: ProjectType,
         generator: &ConfigGenerator,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         match project_type {
             ProjectType::Ruby => {
                 if self.dry_run {
@@ -619,7 +619,7 @@ impl CommandHandler {
         Ok(())
     }
 
-    pub async fn handle_interactive(&self) -> Result<(), ZackstrapError> {
+    pub async fn handle_interactive(&self) -> Result<(), InitiumError> {
         if self.dry_run {
             println!(
                 "{}",

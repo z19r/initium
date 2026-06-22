@@ -1,12 +1,12 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 
 impl super::ConfigGenerator {
     #[allow(dead_code)]
-    pub async fn generate_bash(&self) -> Result<(), ZackstrapError> {
+    pub async fn generate_bash(&self) -> Result<(), InitiumError> {
         self.generate_bash_with_template("default").await
     }
 
-    pub async fn generate_bash_with_template(&self, template: &str) -> Result<(), ZackstrapError> {
+    pub async fn generate_bash_with_template(&self, template: &str) -> Result<(), InitiumError> {
         // Generate basic configs first
         self.generate_basic_with_template(false, template).await?;
 
@@ -19,7 +19,7 @@ impl super::ConfigGenerator {
         Ok(())
     }
 
-    async fn generate_shellcheck_config(&self) -> Result<(), ZackstrapError> {
+    async fn generate_shellcheck_config(&self) -> Result<(), InitiumError> {
         let content = r#"# ShellCheck configuration
 # See https://www.shellcheck.net/wiki/
 
@@ -39,7 +39,7 @@ enable=avoid-nullary-conditions
         self.emit_file(".shellcheckrc", content, false, false).await
     }
 
-    async fn generate_bash_justfile(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_bash_justfile(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "devops" => {
                 r#"# Bash DevOps project justfile

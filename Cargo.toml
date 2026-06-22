@@ -1,11 +1,11 @@
 [package]
-name = "zackstrap"
+name = "initium"
 version = "1.8.0"
 edition = "2021"
 authors = ["Zack Kitzmiller"]
 description = "A CLI tool to bootstrap project configuration files"
 license = "MIT"
-repository = "https://github.com/zackkitzmiller/zackstrap"
+repository = "https://github.com/zackkitzmiller/initium"
 keywords = ["cli", "bootstrap", "configuration", "project-setup"]
 categories = ["command-line-utilities", "development-tools"]
 
@@ -43,5 +43,5 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [[bin]]
-name = "zackstrap"
+name = "initium"
 path = "src/main.rs"

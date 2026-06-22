@@ -1,4 +1,4 @@
-# Zackstrap — project command runner
+# Initium — project command runner
 # https://github.com/casey/just
 
 set dotenv-load := false
@@ -20,7 +20,7 @@ build:
 build-release:
     cargo build --release
 
-# Install zackstrap to ~/.cargo/bin
+# Install initium to ~/.cargo/bin
 install:
     cargo install --path .
 
@@ -48,27 +48,27 @@ test-one NAME:
 
 # Run only unit tests
 test-unit:
-    cargo test -p zackstrap --test unit_tests
+    cargo test -p initium --test unit_tests
 
 # Run only integration tests
 test-integration:
-    cargo test -p zackstrap --test integration_tests
+    cargo test -p initium --test integration_tests
 
 # Run only CLI argument parsing tests
 test-cli:
-    cargo test -p zackstrap --test cli_tests
+    cargo test -p initium --test cli_tests
 
 # Run only end-to-end tests
 test-e2e:
-    cargo test -p zackstrap --test e2e_tests
+    cargo test -p initium --test e2e_tests
 
 # Run only fail-on-exists tests
 test-fail-on-exists:
-    cargo test -p zackstrap --test fail_on_exists_tests
+    cargo test -p initium --test fail_on_exists_tests
 
 # Run only generator tests
 test-generators:
-    cargo test -p zackstrap --test generators_tests
+    cargo test -p initium --test generators_tests
 
 # Run tests with stdout visible
 test-verbose:
@@ -217,7 +217,7 @@ clean-all: clean
 
 # Show project and toolchain versions
 info:
-    @echo "Zackstrap v{{version}}"
+    @echo "Initium v{{version}}"
     @echo ""
     @echo "Toolchain"
     @echo "  rustc:  $(rustc --version)"

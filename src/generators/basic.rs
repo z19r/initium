@@ -1,8 +1,8 @@
 use crate::config::{EditorConfig, PrettierConfig};
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 
 impl super::ConfigGenerator {
-    pub async fn generate_basic(&self, fail_on_exists: bool) -> Result<(), ZackstrapError> {
+    pub async fn generate_basic(&self, fail_on_exists: bool) -> Result<(), InitiumError> {
         self.generate_basic_with_template(fail_on_exists, "default")
             .await
     }
@@ -11,7 +11,7 @@ impl super::ConfigGenerator {
         &self,
         fail_on_exists: bool,
         template: &str,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let config = EditorConfig::default();
         self.emit_file(".editorconfig", &config.to_string(), fail_on_exists, false)
             .await?;
@@ -51,7 +51,7 @@ clean:
     }
 
     #[allow(dead_code)]
-    pub async fn generate_editor_config(&self, fail_on_exists: bool) -> Result<(), ZackstrapError> {
+    pub async fn generate_editor_config(&self, fail_on_exists: bool) -> Result<(), InitiumError> {
         let config = EditorConfig::default();
         self.emit_file(".editorconfig", &config.to_string(), fail_on_exists, false)
             .await

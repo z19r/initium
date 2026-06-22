@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-use zackstrap::ConfigGenerator;
+use initium::ConfigGenerator;
 
 #[test]
 fn test_all_python_templates() {

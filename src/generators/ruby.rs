@@ -1,13 +1,13 @@
 use crate::config::PackageJson;
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 
 impl super::ConfigGenerator {
     #[allow(dead_code)]
-    pub async fn generate_ruby(&self) -> Result<(), ZackstrapError> {
+    pub async fn generate_ruby(&self) -> Result<(), InitiumError> {
         self.generate_ruby_with_template("default").await
     }
 
-    pub async fn generate_ruby_with_template(&self, template: &str) -> Result<(), ZackstrapError> {
+    pub async fn generate_ruby_with_template(&self, template: &str) -> Result<(), InitiumError> {
         // Generate basic configs first (includes justfile)
         self.generate_basic_with_template(false, template).await?;
 
@@ -23,12 +23,12 @@ impl super::ConfigGenerator {
         Ok(())
     }
 
-    async fn generate_ruby_version(&self) -> Result<(), ZackstrapError> {
+    async fn generate_ruby_version(&self) -> Result<(), InitiumError> {
         let content = "3.4.9\n";
         self.emit_file(".ruby-version", content, false, false).await
     }
 
-    async fn generate_node_version(&self) -> Result<(), ZackstrapError> {
+    async fn generate_node_version(&self) -> Result<(), InitiumError> {
         let content = "25.9.0\n";
         self.emit_file(".node-version", content, false, false).await
     }
@@ -36,7 +36,7 @@ impl super::ConfigGenerator {
     async fn generate_rubocop_config_with_template(
         &self,
         template: &str,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let content = match template {
             "rails" => {
                 r#"# Rails-specific RuboCop configuration
@@ -131,7 +131,7 @@ Layout/LineLength:
     async fn generate_package_json_with_template(
         &self,
         template: &str,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let package_json = match template {
             "rails" | "sinatra" | "gem" => PackageJson::from_template(template),
             _ => PackageJson::default(),
@@ -140,7 +140,7 @@ Layout/LineLength:
         self.emit_file("package.json", &content, false, false).await
     }
 
-    async fn generate_ruby_justfile(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_ruby_justfile(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "rails" => {
                 r#"# Rails project justfile
