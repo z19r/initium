@@ -1,8 +1,10 @@
 # Initium
 
+> **Note**: This project was previously published as [`zackstrap`](https://crates.io/crates/zackstrap). Starting with v2.0.0, it is published as [`initium-cli`](https://crates.io/crates/initium-cli).
+
 [![CI/CD Pipeline](https://github.com/zackkitzmiller/initium/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/zackkitzmiller/initium/actions/workflows/ci.yml)
 [![Test Coverage](https://codecov.io/gh/zackkitzmiller/initium/graph/badge.svg?token=LL69KNNRL0)](https://codecov.io/gh/zackkitzmiller/initium)
-[![Crates.io](https://img.shields.io/crates/v/initium.svg)](https://crates.io/crates/initium)
+[![Crates.io](https://img.shields.io/crates/v/initium-cli.svg)](https://crates.io/crates/initium-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A powerful Rust CLI tool to bootstrap project configuration files. Quickly
@@ -36,7 +38,7 @@ cargo install --path .
 ### Using Cargo
 
 ```bash
-cargo install initium
+cargo install initium-cli
 ```
 
 ## Usage

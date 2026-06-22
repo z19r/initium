@@ -48,27 +48,27 @@ test-one NAME:
 
 # Run only unit tests
 test-unit:
-    cargo test -p initium --test unit_tests
+    cargo test -p initium-cli --test unit_tests
 
 # Run only integration tests
 test-integration:
-    cargo test -p initium --test integration_tests
+    cargo test -p initium-cli --test integration_tests
 
 # Run only CLI argument parsing tests
 test-cli:
-    cargo test -p initium --test cli_tests
+    cargo test -p initium-cli --test cli_tests
 
 # Run only end-to-end tests
 test-e2e:
-    cargo test -p initium --test e2e_tests
+    cargo test -p initium-cli --test e2e_tests
 
 # Run only fail-on-exists tests
 test-fail-on-exists:
-    cargo test -p initium --test fail_on_exists_tests
+    cargo test -p initium-cli --test fail_on_exists_tests
 
 # Run only generator tests
 test-generators:
-    cargo test -p initium --test generators_tests
+    cargo test -p initium-cli --test generators_tests
 
 # Run tests with stdout visible
 test-verbose:
