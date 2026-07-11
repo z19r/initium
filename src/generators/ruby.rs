@@ -8,8 +8,15 @@ impl super::ConfigGenerator {
     }
 
     pub async fn generate_ruby_with_template(&self, template: &str) -> Result<(), InitiumError> {
+        let basic_template = if template == "default" {
+            "ruby"
+        } else {
+            template
+        };
+
         // Generate basic configs first (includes justfile)
-        self.generate_basic_with_template(false, template).await?;
+        self.generate_basic_with_template(false, basic_template)
+            .await?;
 
         // Generate Ruby-specific configs
         self.generate_ruby_version().await?;

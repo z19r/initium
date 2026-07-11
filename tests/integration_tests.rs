@@ -73,6 +73,10 @@ async fn test_generate_ruby_config() {
     assert!(package_json.contains("prettier-plugin-ruby"));
     assert!(package_json.contains("github:prettier/plugin-ruby"));
 
+    let prettier_config = std::fs::read_to_string(temp_dir.child(".prettierrc").path()).unwrap();
+    assert!(prettier_config.contains("@prettier/plugin-ruby"));
+    assert!(prettier_config.contains("\"singleQuote\": false"));
+
     let rubocop_config = std::fs::read_to_string(temp_dir.child(".rubocop.yml").path()).unwrap();
     assert!(rubocop_config.contains("TargetRubyVersion: 3.3"));
     assert!(rubocop_config.contains("Max: 120"));
