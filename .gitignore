@@ -85,3 +85,11 @@ node_modules/
 
 tarpaulin-report.html
 release/
+
+# Local AI-assistant tooling state (per-machine caches, not project config)
+.tokensave/
+.whetstone/
+.serena/
+.claude/whetstone.json
+.claude/.headroom_wrap_marker.json
+.claude/db/*.v2bak
