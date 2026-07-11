@@ -72,6 +72,10 @@ fn e2e_basic_default() {
     let p = temp.path();
     assert!(p.join(".editorconfig").exists(), "missing .editorconfig");
     assert!(p.join(".prettierrc").exists(), "missing .prettierrc");
+    assert!(
+        p.join(".prettierignore").exists(),
+        "missing .prettierignore"
+    );
     assert!(p.join("justfile").exists(), "missing justfile");
 
     assert_valid_json(p.join(".prettierrc").as_path(), "basic default .prettierrc");

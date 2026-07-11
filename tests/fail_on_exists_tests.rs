@@ -146,6 +146,7 @@ async fn test_fail_on_exists_with_templates() {
         // Clean up for next iteration
         let _ = std::fs::remove_file(temp_dir.path().join(".editorconfig"));
         let _ = std::fs::remove_file(temp_dir.path().join(".prettierrc"));
+        let _ = std::fs::remove_file(temp_dir.path().join(".prettierignore"));
         let _ = std::fs::remove_file(temp_dir.path().join("justfile"));
     }
 }
@@ -174,6 +175,7 @@ async fn test_fail_on_exists_file_specific_behavior() {
     let files = vec![
         ".editorconfig",
         ".prettierrc",
+        ".prettierignore",
         "justfile",
         ".ruby-version",
         ".node-version",

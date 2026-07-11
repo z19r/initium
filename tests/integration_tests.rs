@@ -17,6 +17,9 @@ async fn test_generate_basic_config() {
     temp_dir
         .child(".prettierrc")
         .assert(predicates::path::exists());
+    temp_dir
+        .child(".prettierignore")
+        .assert(predicates::path::exists());
     // Verify .editorconfig content
     let editor_config = std::fs::read_to_string(temp_dir.child(".editorconfig").path()).unwrap();
     assert!(editor_config.contains("root = true"));
@@ -26,6 +29,10 @@ async fn test_generate_basic_config() {
     let prettier_config = std::fs::read_to_string(temp_dir.child(".prettierrc").path()).unwrap();
     assert!(prettier_config.contains("\"semi\": true"));
     assert!(prettier_config.contains("\"singleQuote\": true"));
+
+    let prettier_ignore =
+        std::fs::read_to_string(temp_dir.child(".prettierignore").path()).unwrap();
+    assert!(prettier_ignore.is_empty());
 }
 
 #[tokio::test]

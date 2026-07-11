@@ -639,6 +639,7 @@ impl CommandHandler {
         println!("{}", "📋 Available configuration files:".blue());
         println!("  • .editorconfig");
         println!("  • .prettierrc");
+        println!("  • .prettierignore");
         println!("  • .ruby-version (Ruby projects)");
         println!("  • .node-version (Ruby projects, for frontend tooling)");
         println!("  • .rubocop.yml (Ruby projects)");
