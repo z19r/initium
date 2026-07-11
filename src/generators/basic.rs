@@ -19,6 +19,8 @@ impl super::ConfigGenerator {
         let prettier = PrettierConfig::from_template(template);
         self.emit_file(".prettierrc", &prettier.to_string(), fail_on_exists, false)
             .await?;
+        self.emit_file(".prettierignore", "", fail_on_exists, false)
+            .await?;
 
         let justfile_content = r#"# Basic project justfile
 # Add your project-specific commands here

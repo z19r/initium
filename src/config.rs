@@ -29,6 +29,7 @@ pub struct PrettierConfig {
     pub tab_width: u8,
     pub trailing_comma: String,
     pub print_width: u8,
+    pub plugins: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -181,11 +182,18 @@ impl Default for PrettierConfig {
             tab_width: 2,
             trailing_comma: "es5".to_string(),
             print_width: 80,
+            plugins: None,
         }
     }
 }
 
 impl PrettierConfig {
+    fn with_ruby_plugin(mut self) -> Self {
+        self.single_quote = false;
+        self.plugins = Some(vec!["@prettier/plugin-ruby".to_string()]);
+        self
+    }
+
     pub fn from_template(template: &str) -> Self {
         match template {
             "google" => Self {
@@ -194,6 +202,7 @@ impl PrettierConfig {
                 tab_width: 2,
                 trailing_comma: "es5".to_string(),
                 print_width: 80,
+                plugins: None,
             },
             "airbnb" => Self {
                 semi: true,
@@ -201,7 +210,9 @@ impl PrettierConfig {
                 tab_width: 2,
                 trailing_comma: "es5".to_string(),
                 print_width: 100,
+                plugins: None,
             },
+            "rails" | "sinatra" | "gem" | "ruby" => Self::default().with_ruby_plugin(),
             _ => Self::default(),
         }
     }
@@ -211,9 +222,22 @@ impl fmt::Display for PrettierConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            r#"{{"semi": {}, "singleQuote": {}, "tabWidth": {}, "trailingComma": "{}", "printWidth": {}}}"#,
+            r#"{{"semi": {}, "singleQuote": {}, "tabWidth": {}, "trailingComma": "{}", "printWidth": {}"#,
             self.semi, self.single_quote, self.tab_width, self.trailing_comma, self.print_width
-        )
+        )?;
+
+        if let Some(plugins) = &self.plugins {
+            write!(f, r#", "plugins": ["#)?;
+            for (index, plugin) in plugins.iter().enumerate() {
+                if index > 0 {
+                    write!(f, ", ")?;
+                }
+                write!(f, r#""{}""#, plugin)?;
+            }
+            write!(f, "]")?;
+        }
+
+        write!(f, "}}")
     }
 }
 
