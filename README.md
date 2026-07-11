@@ -1,8 +1,10 @@
-# Zackstrap
+# Initium
 
-[![CI/CD Pipeline](https://github.com/zackkitzmiller/zackstrap/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/zackkitzmiller/zackstrap/actions/workflows/ci.yml)
-[![Test Coverage](https://codecov.io/gh/zackkitzmiller/zackstrap/graph/badge.svg?token=LL69KNNRL0)](https://codecov.io/gh/zackkitzmiller/zackstrap)
-[![Crates.io](https://img.shields.io/crates/v/zackstrap.svg)](https://crates.io/crates/zackstrap)
+> **Note**: This project was previously published as [`zackstrap`](https://crates.io/crates/zackstrap). Starting with v2.0.0, it is published as [`initium-cli`](https://crates.io/crates/initium-cli).
+
+[![CI/CD Pipeline](https://github.com/zackkitzmiller/initium/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/zackkitzmiller/initium/actions/workflows/ci.yml)
+[![Test Coverage](https://codecov.io/gh/zackkitzmiller/initium/graph/badge.svg?token=LL69KNNRL0)](https://codecov.io/gh/zackkitzmiller/initium)
+[![Crates.io](https://img.shields.io/crates/v/initium-cli.svg)](https://crates.io/crates/initium-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A powerful Rust CLI tool to bootstrap project configuration files. Quickly
@@ -27,8 +29,8 @@ Ruby, Python, Node.js, Go, Rust, and Bash.
 ### From Source
 
 ```bash
-git clone https://github.com/zackkitzmiller/zackstrap.git
-cd zackstrap
+git clone https://github.com/zackkitzmiller/initium.git
+cd initium
 cargo build --release
 cargo install --path .
 ```
@@ -36,7 +38,7 @@ cargo install --path .
 ### Using Cargo
 
 ```bash
-cargo install zackstrap
+cargo install initium-cli
 ```
 
 ## Usage
@@ -46,7 +48,7 @@ cargo install zackstrap
 Generate basic configuration files (`.editorconfig`, `.prettierrc`):
 
 ```bash
-zackstrap basic
+initium basic
 ```
 
 ### Ruby Project Configuration
@@ -54,7 +56,7 @@ zackstrap basic
 Generate Ruby-specific configuration files:
 
 ```bash
-zackstrap ruby
+initium ruby
 ```
 
 This will create:
@@ -73,7 +75,7 @@ This will create:
 Generate Python-specific configuration files:
 
 ```bash
-zackstrap python
+initium python
 ```
 
 This will create:
@@ -93,7 +95,7 @@ This will create:
 Generate Node.js-specific configuration files:
 
 ```bash
-zackstrap node
+initium node
 ```
 
 This will create:
@@ -112,7 +114,7 @@ This will create:
 Generate Go-specific configuration files:
 
 ```bash
-zackstrap go
+initium go
 ```
 
 This will create:
@@ -131,7 +133,7 @@ This will create:
 Generate Rust-specific configuration files:
 
 ```bash
-zackstrap rust
+initium rust
 ```
 
 This will create:
@@ -150,7 +152,7 @@ This will create:
 Generate Bash / shell script project files (ShellCheck, `just` tasks):
 
 ```bash
-zackstrap bash
+initium bash
 ```
 
 This will create:
@@ -164,7 +166,7 @@ This will create:
 
 **Templates:** `default`, `devops` (CI-style checks), `cli` (expects `main.sh`).
 
-**Auto-detect:** `zackstrap auto` picks Bash when `.shellcheckrc`, `.bats`, or
+**Auto-detect:** `initium auto` picks Bash when `.shellcheckrc`, `.bats`, or
 `main.sh` is present in the target directory.
 
 ### Force Overwrite
@@ -172,8 +174,8 @@ This will create:
 Use the `--force` flag to overwrite existing files:
 
 ```bash
-zackstrap basic --force
-zackstrap ruby --force
+initium basic --force
+initium ruby --force
 ```
 
 ### Target Directory
@@ -181,8 +183,8 @@ zackstrap ruby --force
 Specify a different target directory:
 
 ```bash
-zackstrap basic --target /path/to/project
-zackstrap ruby --target /path/to/project
+initium basic --target /path/to/project
+initium ruby --target /path/to/project
 ```
 
 ### List Available Configurations
@@ -190,7 +192,7 @@ zackstrap ruby --target /path/to/project
 See what configuration files are available:
 
 ```bash
-zackstrap list
+initium list
 ```
 
 ### Auto-Detection
@@ -198,7 +200,7 @@ zackstrap list
 Automatically detect project type and generate appropriate configs:
 
 ```bash
-zackstrap auto
+initium auto
 ```
 
 ### Interactive Mode
@@ -206,7 +208,7 @@ zackstrap auto
 Guided setup with user prompts:
 
 ```bash
-zackstrap interactive
+initium interactive
 ```
 
 ### Template System
@@ -215,34 +217,34 @@ Use different configuration templates:
 
 ```bash
 # Basic projects with different styles
-zackstrap basic --template google
-zackstrap basic --template airbnb
+initium basic --template google
+initium basic --template airbnb
 
 # Ruby projects with framework-specific configs
-zackstrap ruby --template rails
-zackstrap ruby --template sinatra
-zackstrap ruby --template gem
+initium ruby --template rails
+initium ruby --template sinatra
+initium ruby --template gem
 
 # Python projects with framework-specific configs
-zackstrap python --template django
-zackstrap python --template flask
+initium python --template django
+initium python --template flask
 
 # Node.js projects with framework-specific configs
-zackstrap node --template express
-zackstrap node --template react
+initium node --template express
+initium node --template react
 
 # Go projects with project type configs
-zackstrap go --template web
-zackstrap go --template cli
+initium go --template web
+initium go --template cli
 
 # Rust projects with project type configs
-zackstrap rust --template web
-zackstrap rust --template cli
+initium rust --template web
+initium rust --template cli
 
 # Bash projects
-zackstrap bash --template default
-zackstrap bash --template devops
-zackstrap bash --template cli
+initium bash --template default
+initium bash --template devops
+initium bash --template cli
 ```
 
 ### Dry Run Mode
@@ -251,10 +253,10 @@ Preview what would be created without actually creating files:
 
 ```bash
 # Note: --dry-run must come BEFORE the subcommand
-zackstrap --dry-run basic
-zackstrap --dry-run ruby --template rails
-zackstrap --dry-run bash --template devops
-zackstrap --dry-run auto
+initium --dry-run basic
+initium --dry-run ruby --template rails
+initium --dry-run bash --template devops
+initium --dry-run auto
 ```
 
 ## Generated Files
@@ -313,22 +315,22 @@ Generate git hooks for your project to ensure code quality and consistency:
 
 ```bash
 # Generate git hooks for Ruby project
-zackstrap --hooks ruby
+initium --hooks ruby
 
 # Generate git hooks for Python Django project
-zackstrap --hooks python --template django
+initium --hooks python --template django
 
 # Generate git hooks for Node.js React project
-zackstrap --hooks node --template react
+initium --hooks node --template react
 
 # Generate git hooks for Go web project
-zackstrap --hooks go --template web
+initium --hooks go --template web
 
 # Generate git hooks for Rust CLI project
-zackstrap --hooks rust --template cli
+initium --hooks rust --template cli
 
 # Generate git hooks for Bash (ShellCheck, shfmt if installed, BATS if present)
-zackstrap --hooks bash --template devops
+initium --hooks bash --template devops
 ```
 
 ### Available Git Hooks
@@ -702,7 +704,7 @@ cargo run -- bash
 ## Project Structure
 
 ```bash
-zackstrap/
+initium/
 ├── src/
 │   ├── main.rs           # CLI entry point
 │   ├── lib.rs               # Library exports

@@ -1,4 +1,4 @@
-# Zackstrap Roadmap
+# Initium Roadmap
 
 ## v1.0 – Core (Complete)
 
@@ -21,7 +21,7 @@
 ### Git Hooks
 
 ```bash
-zackstrap ruby --hooks
+initium ruby --hooks
 ```
 
 - Pre-commit hooks for RuboCop, Prettier
@@ -31,8 +31,8 @@ zackstrap ruby --hooks
 ### CI/CD Templates
 
 ```bash
-zackstrap ruby --ci github
-zackstrap ruby --ci gitlab
+initium ruby --ci github
+initium ruby --ci gitlab
 ```
 
 - `.github/workflows/ci.yml`
@@ -42,7 +42,7 @@ zackstrap ruby --ci gitlab
 ### Docker Support
 
 ```bash
-zackstrap ruby --docker
+initium ruby --docker
 ```
 
 - `Dockerfile` template
@@ -52,8 +52,8 @@ zackstrap ruby --docker
 ### IDE Configuration
 
 ```bash
-zackstrap ruby --ide vscode
-zackstrap ruby --ide intellij
+initium ruby --ide vscode
+initium ruby --ide intellij
 ```
 
 - VS Code settings and extensions
@@ -70,7 +70,7 @@ zackstrap ruby --ide intellij
 ### Backup Existing Files
 
 ```bash
-zackstrap ruby --backup
+initium ruby --backup
 ```
 
 - Rename existing configs to `.backup` before overwriting
@@ -80,7 +80,7 @@ zackstrap ruby --backup
 ### Configuration Validation
 
 ```bash
-zackstrap validate
+initium validate
 ```
 
 - Check if existing configs are valid
@@ -90,7 +90,7 @@ zackstrap validate
 ### Update Mode
 
 ```bash
-zackstrap update
+initium update
 ```
 
 - Update existing configs to latest versions

@@ -1,5 +1,5 @@
 use assert_fs::TempDir;
-use zackstrap::generators::ConfigGenerator;
+use initium::generators::ConfigGenerator;
 
 #[tokio::test]
 async fn test_fail_on_exists_basic_project() {
@@ -15,7 +15,7 @@ async fn test_fail_on_exists_basic_project() {
     assert!(result.is_err());
     assert!(matches!(
         result.unwrap_err(),
-        zackstrap::error::ZackstrapError::FileExists(_)
+        initium::error::InitiumError::FileExists(_)
     ));
 
     // Third generation with fail_on_exists=false should succeed
@@ -122,7 +122,7 @@ async fn test_fail_on_exists_individual_files() {
     assert!(result.is_err());
     assert!(matches!(
         result.unwrap_err(),
-        zackstrap::error::ZackstrapError::FileExists(_)
+        initium::error::InitiumError::FileExists(_)
     ));
 
     // With fail_on_exists=false should succeed

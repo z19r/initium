@@ -1,6 +1,6 @@
 use assert_fs::prelude::*;
 use assert_fs::TempDir;
-use zackstrap::ConfigGenerator;
+use initium::ConfigGenerator;
 
 #[tokio::test]
 async fn test_generate_basic_config() {
@@ -414,25 +414,25 @@ async fn test_project_type_detection() {
     // Test Python detection
     std::fs::write(temp_dir.child("main.py").path(), "print('Hello')").unwrap();
     let project_type = generator.detect_project_type().await.unwrap();
-    assert!(matches!(project_type, zackstrap::ProjectType::Python));
+    assert!(matches!(project_type, initium::ProjectType::Python));
 
     // Test Node.js detection
     std::fs::remove_file(temp_dir.child("main.py").path()).unwrap();
     std::fs::write(temp_dir.child("package.json").path(), "{}").unwrap();
     let project_type = generator.detect_project_type().await.unwrap();
-    assert!(matches!(project_type, zackstrap::ProjectType::Node));
+    assert!(matches!(project_type, initium::ProjectType::Node));
 
     // Test Go detection
     std::fs::remove_file(temp_dir.child("package.json").path()).unwrap();
     std::fs::write(temp_dir.child("main.go").path(), "package main").unwrap();
     let project_type = generator.detect_project_type().await.unwrap();
-    assert!(matches!(project_type, zackstrap::ProjectType::Go));
+    assert!(matches!(project_type, initium::ProjectType::Go));
 
     // Test Rust detection
     std::fs::remove_file(temp_dir.child("main.go").path()).unwrap();
     std::fs::write(temp_dir.child("main.rs").path(), "fn main() {}").unwrap();
     let project_type = generator.detect_project_type().await.unwrap();
-    assert!(matches!(project_type, zackstrap::ProjectType::Rust));
+    assert!(matches!(project_type, initium::ProjectType::Rust));
 
     // Test Ruby detection
     std::fs::remove_file(temp_dir.child("main.rs").path()).unwrap();
@@ -442,18 +442,18 @@ async fn test_project_type_detection() {
     )
     .unwrap();
     let project_type = generator.detect_project_type().await.unwrap();
-    assert!(matches!(project_type, zackstrap::ProjectType::Ruby));
+    assert!(matches!(project_type, initium::ProjectType::Ruby));
 
     // Test Bash detection
     std::fs::remove_file(temp_dir.child("Gemfile").path()).unwrap();
     std::fs::write(temp_dir.child(".shellcheckrc").path(), "shell=bash").unwrap();
     let project_type = generator.detect_project_type().await.unwrap();
-    assert!(matches!(project_type, zackstrap::ProjectType::Bash));
+    assert!(matches!(project_type, initium::ProjectType::Bash));
 
     // Test basic detection (default)
     std::fs::remove_file(temp_dir.child(".shellcheckrc").path()).unwrap();
     let project_type = generator.detect_project_type().await.unwrap();
-    assert!(matches!(project_type, zackstrap::ProjectType::Basic));
+    assert!(matches!(project_type, initium::ProjectType::Basic));
 }
 
 #[tokio::test]

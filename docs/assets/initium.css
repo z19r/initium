@@ -1,0 +1,33 @@
+:root {
+  --initium-ink: #070B16;
+  --initium-midnight: #0B1020;
+  --initium-slate: #1A2133;
+  --initium-muted: #8A90A0;
+  --initium-paper: #F7F8FB;
+  --initium-white: #FFFFFF;
+  --initium-violet: #7C4DFF;
+  --initium-purple: #A855F7;
+  --initium-indigo: #4F46E5;
+  --initium-success: #4ADE80;
+
+  --initium-gradient-primary: linear-gradient(135deg, #A855F7 0%, #7C4DFF 48%, #4F46E5 100%);
+  --initium-gradient-dark: radial-gradient(circle at 20% 10%, rgba(124,77,255,.28), transparent 34%),
+    linear-gradient(135deg, #070B16 0%, #0B1020 58%, #10182B 100%);
+
+  --initium-font-ui: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --initium-font-code: "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.initium-gradient-text {
+  background: var(--initium-gradient-primary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.initium-card {
+  background: var(--initium-gradient-dark);
+  color: var(--initium-white);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 24px;
+}

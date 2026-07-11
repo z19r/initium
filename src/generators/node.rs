@@ -1,13 +1,13 @@
 use crate::config::PackageJson;
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 
 impl super::ConfigGenerator {
     #[allow(dead_code)]
-    pub async fn generate_node(&self) -> Result<(), ZackstrapError> {
+    pub async fn generate_node(&self) -> Result<(), InitiumError> {
         self.generate_node_with_template("default").await
     }
 
-    pub async fn generate_node_with_template(&self, template: &str) -> Result<(), ZackstrapError> {
+    pub async fn generate_node_with_template(&self, template: &str) -> Result<(), InitiumError> {
         // Generate basic configs first
         self.generate_basic_with_template(false, template).await?;
 
@@ -22,12 +22,12 @@ impl super::ConfigGenerator {
         Ok(())
     }
 
-    async fn generate_nvmrc(&self) -> Result<(), ZackstrapError> {
+    async fn generate_nvmrc(&self) -> Result<(), InitiumError> {
         let content = "20\n";
         self.emit_file(".nvmrc", content, false, false).await
     }
 
-    async fn generate_eslint_config(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_eslint_config(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "express" => {
                 r#"{
@@ -86,13 +86,13 @@ impl super::ConfigGenerator {
             .await
     }
 
-    async fn generate_node_package_json(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_node_package_json(&self, template: &str) -> Result<(), InitiumError> {
         let package_json = PackageJson::from_template(template);
         let content = package_json.to_string();
         self.emit_file("package.json", &content, false, false).await
     }
 
-    async fn generate_node_justfile(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_node_justfile(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "express" => {
                 r#"# Express.js project justfile

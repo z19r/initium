@@ -10,8 +10,8 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  CRATE_NAME: zackstrap
-  BIN_NAME: zackstrap
+  CRATE_NAME: initium-cli
+  BIN_NAME: initium
 
 concurrency:
   group: release

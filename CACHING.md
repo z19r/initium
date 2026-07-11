@@ -1,6 +1,6 @@
 # 🚀 CI/CD Caching Strategy
 
-This document outlines the comprehensive caching strategy for Zackstrap's CI/CD pipelines to minimize build times and reduce resource usage.
+This document outlines the comprehensive caching strategy for Initium's CI/CD pipelines to minimize build times and reduce resource usage.
 
 ## 📊 **Current Performance**
 

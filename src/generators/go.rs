@@ -1,12 +1,12 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 
 impl super::ConfigGenerator {
     #[allow(dead_code)]
-    pub async fn generate_go(&self) -> Result<(), ZackstrapError> {
+    pub async fn generate_go(&self) -> Result<(), InitiumError> {
         self.generate_go_with_template("default").await
     }
 
-    pub async fn generate_go_with_template(&self, template: &str) -> Result<(), ZackstrapError> {
+    pub async fn generate_go_with_template(&self, template: &str) -> Result<(), InitiumError> {
         // Generate basic configs first
         self.generate_basic_with_template(false, template).await?;
 
@@ -21,7 +21,7 @@ impl super::ConfigGenerator {
         Ok(())
     }
 
-    async fn generate_go_mod(&self) -> Result<(), ZackstrapError> {
+    async fn generate_go_mod(&self) -> Result<(), InitiumError> {
         let content = r#"module myproject
 
 go 1.21
@@ -33,7 +33,7 @@ require (
         self.emit_file("go.mod", content, false, false).await
     }
 
-    async fn generate_golangci_config(&self) -> Result<(), ZackstrapError> {
+    async fn generate_golangci_config(&self) -> Result<(), InitiumError> {
         let content = r#"run:
   timeout: 5m
   modules-download-mode: readonly
@@ -81,7 +81,7 @@ issues:
         self.emit_file(".golangci.yml", content, false, false).await
     }
 
-    async fn generate_go_gitignore(&self) -> Result<(), ZackstrapError> {
+    async fn generate_go_gitignore(&self) -> Result<(), InitiumError> {
         let content = r#"# Binaries for programs and plugins
 *.exe
 *.exe~
@@ -129,7 +129,7 @@ Thumbs.db
         self.emit_file(".gitignore", content, false, false).await
     }
 
-    async fn generate_go_justfile(&self, template: &str) -> Result<(), ZackstrapError> {
+    async fn generate_go_justfile(&self, template: &str) -> Result<(), InitiumError> {
         let content = match template {
             "web" => {
                 r#"# Go web project justfile

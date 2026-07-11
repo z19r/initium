@@ -1,6 +1,6 @@
 # Development Setup Guide
 
-This guide will help you set up the development environment for Zackstrap and understand the CI/CD pipeline.
+This guide will help you set up the development environment for Initium and understand the CI/CD pipeline.
 
 ## 🚀 Quick Start
 
@@ -15,8 +15,8 @@ This guide will help you set up the development environment for Zackstrap and un
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/zackkitzmiller/zackstrap.git
-   cd zackstrap
+   git clone https://github.com/zackkitzmiller/initium.git
+   cd initium
    ```
 
 2. **Install development tools**

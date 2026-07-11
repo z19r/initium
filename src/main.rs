@@ -7,11 +7,11 @@ mod error;
 mod generators;
 
 use commands::CommandHandler;
-use error::ZackstrapError;
+use error::InitiumError;
 
 #[derive(Parser)]
 #[command(
-    name = "zackstrap",
+    name = "initium",
     about = "Bootstrap project configuration files",
     version,
     long_about = "A CLI tool to quickly generate common project configuration files like .editorconfig, .prettierrc, and more."
@@ -94,7 +94,7 @@ enum Commands {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), ZackstrapError> {
+async fn main() -> Result<(), InitiumError> {
     let cli = Cli::parse();
 
     let target_dir = cli
@@ -102,11 +102,11 @@ async fn main() -> Result<(), ZackstrapError> {
         .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
 
     if !target_dir.exists() {
-        return Err(ZackstrapError::DirectoryNotFound(target_dir));
+        return Err(InitiumError::DirectoryNotFound(target_dir));
     }
 
     if !target_dir.is_dir() {
-        return Err(ZackstrapError::NotADirectory(target_dir));
+        return Err(InitiumError::NotADirectory(target_dir));
     }
 
     let handler = CommandHandler::new(

@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
-pub enum ZackstrapError {
+pub enum InitiumError {
     #[error("Directory not found: {0}")]
     DirectoryNotFound(PathBuf),
 

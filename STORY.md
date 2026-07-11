@@ -1,6 +1,6 @@
 # 🎉 What I've Created
 
-I've built a professional-grade Rust CLI application called **Zackstrap** that follows all Rust best practices:
+I've built a professional-grade Rust CLI application called **Initium** that follows all Rust best practices:
 
 ## 🏗️ **Project Structure**
 
@@ -96,25 +96,25 @@ cargo run -- ruby --target /path/to/project
 
 ```bash
 cargo install --path .
-zackstrap basic
-zackstrap ruby
+initium basic
+initium ruby
 ```
 
 ### 🎯 **CLI Commands**
 
 ```bash
-zackstrap --help                    # Show help
-zackstrap basic                     # Generate basic configs
-zackstrap basic --force            # Force overwrite
-zackstrap basic --template google  # Use Google style template
-zackstrap ruby                     # Generate Ruby configs
-zackstrap ruby --force             # Force overwrite
-zackstrap ruby --template rails    # Use Rails template
-zackstrap auto                     # Auto-detect project type
-zackstrap interactive              # Guided setup
-zackstrap list                     # List available configs
-zackstrap --target /path/to/dir    # Specify target directory
-zackstrap --dry-run                # Preview without creating files (use BEFORE subcommand)
+initium --help                    # Show help
+initium basic                     # Generate basic configs
+initium basic --force            # Force overwrite
+initium basic --template google  # Use Google style template
+initium ruby                     # Generate Ruby configs
+initium ruby --force             # Force overwrite
+initium ruby --template rails    # Use Rails template
+initium auto                     # Auto-detect project type
+initium interactive              # Guided setup
+initium list                     # List available configs
+initium --target /path/to/dir    # Specify target directory
+initium --dry-run                # Preview without creating files (use BEFORE subcommand)
 ```
 
 ### 🔧 **Key Design Decisions**

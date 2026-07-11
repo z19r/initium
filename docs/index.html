@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>initium — Init your project. Set your standards.</title>
+  <meta name="description" content="Configs, linters, formatters, git hooks, and tooling setup — in one command.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;750&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #070B16;
+      --midnight: #0B1020;
+      --slate: #1A2133;
+      --muted: #8A90A0;
+      --paper: #F7F8FB;
+      --white: #FFFFFF;
+      --violet: #7C4DFF;
+      --purple: #A855F7;
+      --indigo: #4F46E5;
+      --success: #4ADE80;
+      --grad: linear-gradient(135deg, #A855F7 0%, #7C4DFF 48%, #4F46E5 100%);
+      --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-code: 'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-ui);
+      background: var(--ink);
+      color: var(--paper);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .page {
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 10%, rgba(124,77,255,.18), transparent),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(79,70,229,.12), transparent),
+        var(--ink);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+    }
+
+    .gradient-text {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: clamp(5rem, 12vw, 10rem) 0 clamp(3rem, 8vw, 6rem);
+      text-align: center;
+    }
+
+    .hero-logo {
+      width: clamp(280px, 50vw, 480px);
+      height: auto;
+      margin-bottom: 2rem;
+    }
+
+    .hero-tagline {
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      color: var(--white);
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ── Terminal ── */
+    .terminal-section { padding: clamp(2rem, 6vw, 5rem) 0; }
+
+    .terminal {
+      background: var(--midnight);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 16px;
+      overflow: hidden;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 18px;
+      background: rgba(255,255,255,.03);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    .terminal-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .terminal-dot.red   { background: #FF5F57; }
+    .terminal-dot.yellow { background: #FEBC2E; }
+    .terminal-dot.green  { background: #28C840; }
+
+    .terminal-body {
+      padding: 1.25rem 1.5rem 1.5rem;
+      font-family: var(--font-code);
+      font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+      line-height: 1.8;
+    }
+
+    .terminal-prompt {
+      color: var(--muted);
+    }
+    .terminal-prompt .cmd {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .terminal-line {
+      display: flex;
+      gap: 0.75rem;
+      align-items: baseline;
+    }
+
+    .check { color: var(--success); }
+
+    .terminal-line .label { color: var(--muted); }
+    .terminal-line .value { color: var(--paper); }
+
+    /* ── Languages ── */
+    .languages-section {
+      padding: clamp(2rem, 6vw, 5rem) 0;
+      text-align: center;
+    }
+
+    .languages-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .languages-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .lang-chip {
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 100px;
+      color: var(--paper);
+      background: rgba(255,255,255,.03);
+      transition: border-color 200ms, background 200ms;
+    }
+
+    .lang-chip:hover {
+      border-color: var(--violet);
+      background: rgba(124,77,255,.08);
+    }
+
+    /* ── Install ── */
+    .install-section {
+      padding: clamp(3rem, 8vw, 6rem) 0;
+    }
+
+    .install-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .install-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 600px) {
+      .install-grid { grid-template-columns: 1fr; }
+    }
+
+    .install-card {
+      background: var(--midnight);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      transition: border-color 200ms;
+    }
+
+    .install-card:hover {
+      border-color: rgba(124,77,255,.3);
+    }
+
+    .install-card-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .install-card code {
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      color: var(--paper);
+      word-break: break-all;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: clamp(2rem, 4vw, 3rem) 0;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    footer a {
+      color: var(--violet);
+      text-decoration: none;
+      transition: color 150ms;
+    }
+
+    footer a:hover { color: var(--purple); }
+  </style>
+</head>
+<body>
+<div class="page">
+  <main class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <img src="assets/initium-horizontal-lockup-white.svg" alt="initium" class="hero-logo">
+      <p class="hero-tagline">Init your project. Set your standards.</p>
+      <p class="hero-sub">Configs, linters, formatters, git hooks, and tooling setup — in <span class="gradient-text">one</span> command.</p>
+    </section>
+
+    <!-- CLI Preview -->
+    <section class="terminal-section">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+        </div>
+        <div class="terminal-body">
+          <div class="terminal-prompt">&gt; <span class="cmd">initium</span> init python</div>
+          <div class="terminal-line"><span class="check">&#10003;</span> <span class="label">Detecting project type</span> <span class="value">&nbsp;&nbsp;&nbsp;Python</span></div>
+          <div class="terminal-line"><span class="check">&#10003;</span> <span class="label">Generating editor configs</span></div>
+          <div class="terminal-line"><span class="check">&#10003;</span> <span class="label">Adding linters and formatters</span></div>
+          <div class="terminal-line"><span class="check">&#10003;</span> <span class="label">Setting up Git hooks</span></div>
+          <div class="terminal-line"><span class="check">&#10003;</span> <span class="label">All set! Your project is <span class="gradient-text">initium-ready.</span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Languages -->
+    <section class="languages-section">
+      <p class="languages-label">Works with your stack</p>
+      <div class="languages-grid">
+        <span class="lang-chip">Ruby</span>
+        <span class="lang-chip">Python</span>
+        <span class="lang-chip">Node.js</span>
+        <span class="lang-chip">Go</span>
+        <span class="lang-chip">Rust</span>
+        <span class="lang-chip">Bash</span>
+      </div>
+    </section>
+
+    <!-- Install -->
+    <section class="install-section">
+      <p class="install-label">Install</p>
+      <div class="install-grid">
+        <div class="install-card">
+          <p class="install-card-label">From crates.io</p>
+          <code>cargo install initium-cli</code>
+        </div>
+        <div class="install-card">
+          <p class="install-card-label">From source</p>
+          <code>git clone https://github.com/zackkitzmiller/initium.git &amp;&amp; cd initium &amp;&amp; cargo install --path .</code>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      MIT License &middot; <a href="https://github.com/zackkitzmiller/initium">GitHub</a>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

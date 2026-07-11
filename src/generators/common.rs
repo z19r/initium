@@ -1,4 +1,4 @@
-use crate::error::ZackstrapError;
+use crate::error::InitiumError;
 use std::fs;
 use std::path::PathBuf;
 
@@ -12,12 +12,12 @@ pub trait FileGenerator {
         content: &str,
         force: bool,
         fail_on_exists: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         let file_path = self.target_dir().join(filename);
 
         if file_path.exists() && !force {
             if fail_on_exists {
-                return Err(ZackstrapError::FileExists(file_path));
+                return Err(InitiumError::FileExists(file_path));
             } else {
                 // Skip writing if the file exists and we're not forcing or failing
                 return Ok(());
@@ -30,7 +30,7 @@ pub trait FileGenerator {
         }
 
         fs::write(&file_path, content)
-            .map_err(|e| ZackstrapError::WriteFileError(file_path.clone(), e))?;
+            .map_err(|e| InitiumError::WriteFileError(file_path.clone(), e))?;
         Ok(())
     }
 }
@@ -48,7 +48,7 @@ impl super::ConfigGenerator {
         content: &str,
         fail_on_exists: bool,
         force_override: bool,
-    ) -> Result<(), ZackstrapError> {
+    ) -> Result<(), InitiumError> {
         use colored::*;
 
         if self.dry_run {

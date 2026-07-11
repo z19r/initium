@@ -1,4 +1,4 @@
-//! Full end-to-end tests: run zackstrap for every command/template/flags,
+//! Full end-to-end tests: run initium for every command/template/flags,
 //! dump output, assert generated files exist and are valid (JSON, TOML).
 
 use assert_cmd::Command;
@@ -6,9 +6,9 @@ use assert_fs::TempDir;
 use predicates::prelude::*;
 use std::path::Path;
 
-fn zackstrap_cmd() -> Command {
+fn initium_cmd() -> Command {
     Command::from_std(std::process::Command::new(assert_cmd::cargo::cargo_bin!(
-        "zackstrap"
+        "initium"
     )))
 }
 
@@ -42,9 +42,9 @@ fn assert_valid_toml(path: &Path, context: &str) {
     );
 }
 
-/// Run zackstrap with args, assert success, return (stdout, stderr).
+/// Run initium with args, assert success, return (stdout, stderr).
 fn run_ok(temp: &TempDir, args: &[&str]) -> (String, String) {
-    let mut cmd = zackstrap_cmd();
+    let mut cmd = initium_cmd();
     cmd.arg("--target").arg(temp.path());
     for a in args {
         cmd.arg(a);
@@ -54,7 +54,7 @@ fn run_ok(temp: &TempDir, args: &[&str]) -> (String, String) {
     let stderr = String::from_utf8_lossy(&out.stderr).into_owned();
     assert!(
         out.status.success(),
-        "zackstrap failed.\nargs: {:?}\nstdout:\n{}stderr:\n{}",
+        "initium failed.\nargs: {:?}\nstdout:\n{}stderr:\n{}",
         args,
         stdout,
         stderr
@@ -399,7 +399,7 @@ fn e2e_force() {
 fn e2e_fail_on_exists() {
     let temp = TempDir::new().unwrap();
     run_ok(&temp, &["basic"]);
-    let mut cmd = zackstrap_cmd();
+    let mut cmd = initium_cmd();
     cmd.arg("--target")
         .arg(temp.path())
         .arg("--fail-on-exists")
@@ -414,7 +414,7 @@ fn e2e_fail_on_exists() {
 #[test]
 fn e2e_target_short() {
     let temp = TempDir::new().unwrap();
-    let mut cmd = zackstrap_cmd();
+    let mut cmd = initium_cmd();
     cmd.arg("-t").arg(temp.path()).arg("basic");
     cmd.assert().success();
     assert!(temp.path().join(".editorconfig").exists());
@@ -422,7 +422,7 @@ fn e2e_target_short() {
 
 #[test]
 fn e2e_list() {
-    let mut cmd = zackstrap_cmd();
+    let mut cmd = initium_cmd();
     cmd.arg("list");
     cmd.assert()
         .success()
@@ -438,7 +438,7 @@ fn e2e_list() {
 
 #[test]
 fn e2e_invalid_dir_fails() {
-    let mut cmd = zackstrap_cmd();
+    let mut cmd = initium_cmd();
     cmd.arg("--target")
         .arg("/nonexistent/path/xyz")
         .arg("basic");
@@ -465,7 +465,7 @@ fn e2e_hooks_with_git() {
 #[test]
 fn e2e_file_as_target_fails() {
     let f = assert_fs::NamedTempFile::new("x").unwrap();
-    let mut cmd = zackstrap_cmd();
+    let mut cmd = initium_cmd();
     cmd.arg("--target").arg(f.path()).arg("basic");
     cmd.assert().failure();
 }

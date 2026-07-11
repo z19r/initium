@@ -1,4 +1,4 @@
-# Zackstrap Cleanup & Refactor Plan
+# Initium Cleanup & Refactor Plan
 
 **Generated:** 2025-03-06 | **Scope:** Codebase audit, bug fixes, roadmap sanity, doc cleanup
 
@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-Zackstrap is a solid Rust CLI (v1.1.3) that bootstraps project configs. The core is sound: tests pass, clippy clean, generators work. However, there are **bugs**, **dangerous commands**, **redundant/ridiculous roadmap items**, and **dead or misleading docs**. This plan prioritizes fixes by impact.
+Initium is a solid Rust CLI (v1.1.3) that bootstraps project configs. The core is sound: tests pass, clippy clean, generators work. However, there are **bugs**, **dangerous commands**, **redundant/ridiculous roadmap items**, and **dead or misleading docs**. This plan prioritizes fixes by impact.
 
 ---
 
@@ -63,7 +63,7 @@ Current behavior:
 |------|------------|
 | **v2.0: Machine learning-based recommendations** | Overkill for a config generator. "Smart" detection via heuristics is fine; ML is not. |
 | **v2.0: Plugin marketplace** | Massive scope. Plugin system alone is a big project. |
-| **v2.0: Web interface / serve** | Different product. Zackstrap is a CLI. |
+| **v2.0: Web interface / serve** | Different product. Initium is a CLI. |
 | **v2.0: Analytics & insights** | Not relevant. No telemetry needed for local config generation. |
 | **v3.0: Team collaboration, RBAC** | Enterprise bloat. |
 | **v3.0: Security & compliance, audit trails** | Wrong tool. |
@@ -83,7 +83,7 @@ Current behavior:
 ### 4.2 `detect_project_type` — Unnecessary async
 
 - Purely filesystem checks, no I/O that requires async. Marked `async` for no reason.
-- **Action:** Make it `fn detect_project_type(&self) -> Result<ProjectType, ZackstrapError>` (sync). Callers can wrap in `block_in_place` or we keep the API async and just call it — low priority.
+- **Action:** Make it `fn detect_project_type(&self) -> Result<ProjectType, InitiumError>` (sync). Callers can wrap in `block_in_place` or we keep the API async and just call it — low priority.
 
 ### 4.3 ConfigGenerator — Huge `mod.rs`
 
@@ -117,7 +117,7 @@ Current behavior:
 
 ### 5.4 `handle_list` typo (`commands.rs`)
 
-- `.node-version (Ruby projects)` — `.node-version` is for Node (nvm). In zackstrap it's generated for Ruby projects (frontend tooling). Minor confusion.
+- `.node-version (Ruby projects)` — `.node-version` is for Node (nvm). In initium it's generated for Ruby projects (frontend tooling). Minor confusion.
 - **Action:** Clarify: ".node-version (Ruby projects, for frontend tooling)" or similar.
 
 ---
@@ -154,6 +154,6 @@ Manual smoke test:
 
 ```bash
 just release-build  # ensure cargo get works
-zackstrap list
-zackstrap basic --dry-run
+initium list
+initium basic --dry-run
 ```
