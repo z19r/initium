@@ -1,6 +1,6 @@
 [package]
 name = "initium-cli"
-version = "2.1.1"
+version = "2.2.0"
 edition = "2021"
 authors = ["Zack Kitzmiller"]
 description = "Init your project. Set your standards. Configs, linters, formatters, git hooks, and tooling setup in one command."
