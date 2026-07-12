@@ -93,3 +93,4 @@ release/
 .claude/whetstone.json
 .claude/.headroom_wrap_marker.json
 .claude/db/*.v2bak
+.superpowers/
