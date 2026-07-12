@@ -510,6 +510,30 @@ async fn test_project_type_detection_flutter_top_level_section() {
 }
 
 #[tokio::test]
+async fn test_generate_dart_analysis_options_and_gitignore() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    generator.generate_dart_analysis_options().await.unwrap();
+    let analysis_options =
+        std::fs::read_to_string(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    assert!(analysis_options.contains("package:lints/recommended.yaml"));
+    assert!(analysis_options.contains("prefer_single_quotes"));
+
+    // Default template: pubspec.lock is NOT ignored
+    generator.generate_dart_gitignore("default").await.unwrap();
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(gitignore.contains(".dart_tool/"));
+    assert!(!gitignore.contains("pubspec.lock"));
+
+    // Package template: pubspec.lock IS ignored
+    std::fs::remove_file(temp_dir.child(".gitignore").path()).unwrap();
+    generator.generate_dart_gitignore("package").await.unwrap();
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(gitignore.contains("pubspec.lock"));
+}
+
+#[tokio::test]
 async fn test_dry_run_modes() {
     let temp_dir = TempDir::new().unwrap();
     let generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), true, false);
