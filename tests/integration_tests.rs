@@ -578,29 +578,70 @@ async fn test_generate_dart_config_with_templates() {
 }
 
 #[tokio::test]
-async fn test_generate_flutter_analysis_options_and_gitignore() {
+async fn test_generate_flutter_config() {
     let temp_dir = TempDir::new().unwrap();
     let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
 
-    generator.generate_flutter_analysis_options().await.unwrap();
+    generator
+        .generate_flutter_with_template("default")
+        .await
+        .unwrap();
+
+    temp_dir
+        .child(".editorconfig")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".prettierrc")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("pubspec.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".gitignore")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("justfile")
+        .assert(predicates::path::exists());
+
+    let pubspec = std::fs::read_to_string(temp_dir.child("pubspec.yaml").path()).unwrap();
+    assert!(pubspec.contains("name: my_app"));
+
     let analysis_options =
         std::fs::read_to_string(temp_dir.child("analysis_options.yaml").path()).unwrap();
     assert!(analysis_options.contains("package:flutter_lints/flutter.yaml"));
     assert!(analysis_options.contains("*.freezed.dart"));
 
-    // Default template: pubspec.lock is NOT ignored
-    generator
-        .generate_flutter_gitignore("default")
-        .await
-        .unwrap();
     let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
-    assert!(gitignore.contains(".flutter-plugins"));
     assert!(!gitignore.contains("pubspec.lock"));
 
-    // Plugin template: pubspec.lock IS ignored
-    std::fs::remove_file(temp_dir.child(".gitignore").path()).unwrap();
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("Flutter Project Justfile"));
+}
+
+#[tokio::test]
+async fn test_generate_flutter_config_with_templates() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
     generator
-        .generate_flutter_gitignore("plugin")
+        .generate_flutter_with_template("plugin")
+        .await
+        .unwrap();
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("run-example"));
+
+    std::fs::remove_file(temp_dir.child("justfile").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("pubspec.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".editorconfig").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".prettierrc").path()).unwrap();
+
+    let force_generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), false, true);
+    force_generator
+        .generate_flutter_with_template("package")
         .await
         .unwrap();
     let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();

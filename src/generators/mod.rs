@@ -1549,4 +1549,94 @@ flutter:
             }
         }
     }
+
+    #[allow(dead_code)]
+    pub fn get_flutter_justfile_content(&self, template: &str) -> &'static str {
+        match template {
+            "package" => {
+                r#"# Flutter Project Justfile
+default:
+    @just --list
+
+test:
+    @flutter test
+
+fmt:
+    @dart format .
+
+analyze:
+    @flutter analyze
+
+publish-check:
+    @flutter pub publish --dry-run
+
+install:
+    @flutter pub get
+
+clean:
+    @flutter clean
+"#
+            }
+            "plugin" => {
+                r#"# Flutter Project Justfile
+default:
+    @just --list
+
+test:
+    @flutter test
+
+fmt:
+    @dart format .
+
+analyze:
+    @flutter analyze
+
+publish-check:
+    @flutter pub publish --dry-run
+
+run-example:
+    @cd example && flutter run
+
+test-example:
+    @cd example && flutter test
+
+install:
+    @flutter pub get
+
+clean:
+    @flutter clean
+"#
+            }
+            _ => {
+                r#"# Flutter Project Justfile
+default:
+    @just --list
+
+run:
+    @flutter run
+
+test:
+    @flutter test
+
+fmt:
+    @dart format .
+
+analyze:
+    @flutter analyze
+
+build-apk:
+    @flutter build apk
+
+build-ios:
+    @flutter build ios
+
+install:
+    @flutter pub get
+
+clean:
+    @flutter clean
+"#
+            }
+        }
+    }
 }

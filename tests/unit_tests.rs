@@ -338,3 +338,29 @@ fn test_flutter_pubspec_content_generation() {
     assert!(content.contains("plugin_platform_interface"));
     assert!(content.contains("pluginClass: MyPluginPlugin"));
 }
+
+#[test]
+fn test_flutter_justfile_content_generation() {
+    let temp_dir = PathBuf::from("/tmp");
+    let generator = ConfigGenerator::new(temp_dir);
+
+    // Test default template
+    let content = generator.get_flutter_justfile_content("default");
+    assert!(content.contains("Flutter Project Justfile"));
+    assert!(content.contains("flutter run"));
+    assert!(content.contains("flutter test"));
+    assert!(content.contains("flutter build apk"));
+    assert!(!content.contains("publish-check"));
+    assert!(!content.contains("run-example"));
+
+    // Test package template
+    let content = generator.get_flutter_justfile_content("package");
+    assert!(content.contains("publish-check"));
+    assert!(!content.contains("flutter run"));
+    assert!(!content.contains("run-example"));
+
+    // Test plugin template
+    let content = generator.get_flutter_justfile_content("plugin");
+    assert!(content.contains("run-example"));
+    assert!(content.contains("test-example"));
+}
