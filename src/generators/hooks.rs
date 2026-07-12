@@ -115,6 +115,33 @@ impl GitHooksGenerator {
         Ok(())
     }
 
+    #[allow(dead_code)]
+    pub async fn generate_dart_hooks(
+        &self,
+        template: &str,
+        force: bool,
+    ) -> Result<(), InitiumError> {
+        let hooks_dir = self.target_dir.join(".git").join("hooks");
+
+        if !hooks_dir.exists() {
+            return Err(InitiumError::GitNotInitialized);
+        }
+
+        let pre_commit_content = self.get_dart_pre_commit_hook(template);
+        self.write_hook_file(&hooks_dir.join("pre-commit"), &pre_commit_content, force)
+            .await?;
+
+        let pre_push_content = self.get_dart_pre_push_hook(template);
+        self.write_hook_file(&hooks_dir.join("pre-push"), &pre_push_content, force)
+            .await?;
+
+        let commit_msg_content = self.get_commit_msg_hook();
+        self.write_hook_file(&hooks_dir.join("commit-msg"), &commit_msg_content, force)
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn generate_rust_hooks(
         &self,
         template: &str,
@@ -1056,6 +1083,47 @@ echo "✅ Go pre-push checks passed!"
 "#
             .to_string(),
         }
+    }
+
+    // Dart hooks (content does not vary by template)
+    #[allow(dead_code)]
+    fn get_dart_pre_commit_hook(&self, _template: &str) -> String {
+        r#"#!/bin/bash
+# Dart Pre-commit Hook
+set -e
+
+echo "🔍 Running Dart pre-commit checks..."
+
+if ! command -v dart &> /dev/null; then
+    echo "❌ Dart not found. Please install the Dart SDK."
+    exit 1
+fi
+
+echo "🎨 Checking formatting..."
+dart format --output=none --set-exit-if-changed .
+
+echo "🔍 Running dart analyze..."
+dart analyze
+
+echo "✅ Dart pre-commit checks passed!"
+"#
+        .to_string()
+    }
+
+    #[allow(dead_code)]
+    fn get_dart_pre_push_hook(&self, _template: &str) -> String {
+        r#"#!/bin/bash
+# Dart Pre-push Hook
+set -e
+
+echo "🚀 Running Dart pre-push checks..."
+
+echo "🧪 Running Dart tests..."
+dart test
+
+echo "✅ Dart pre-push checks passed!"
+"#
+        .to_string()
     }
 
     // Rust hooks
