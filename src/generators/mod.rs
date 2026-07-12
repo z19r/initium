@@ -1374,4 +1374,98 @@ dev_dependencies:
             }
         }
     }
+
+    #[allow(dead_code)]
+    pub fn get_dart_justfile_content(&self, template: &str) -> &'static str {
+        match template {
+            "cli" => {
+                r#"# Dart Project Justfile
+default:
+    @just --list
+
+run *ARGS:
+    @dart run bin/main.dart {{ARGS}}
+
+build:
+    @dart compile exe bin/main.dart -o bin/app
+
+test:
+    @dart test
+
+fmt:
+    @dart format .
+
+fmt-check:
+    @dart format --output=none --set-exit-if-changed .
+
+analyze:
+    @dart analyze
+
+install:
+    @dart pub get
+
+update:
+    @dart pub upgrade
+"#
+            }
+            "package" => {
+                r#"# Dart Project Justfile
+default:
+    @just --list
+
+test:
+    @dart test
+
+test-coverage:
+    @dart test --coverage=coverage
+    @dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.dart_tool/package_config.json --report-on=lib
+
+fmt:
+    @dart format .
+
+fmt-check:
+    @dart format --output=none --set-exit-if-changed .
+
+analyze:
+    @dart analyze
+
+publish-check:
+    @dart pub publish --dry-run
+
+install:
+    @dart pub get
+
+update:
+    @dart pub upgrade
+"#
+            }
+            _ => {
+                r#"# Dart Project Justfile
+default:
+    @just --list
+
+run:
+    @dart run
+
+test:
+    @dart test
+
+fmt:
+    @dart format .
+
+fmt-check:
+    @dart format --output=none --set-exit-if-changed .
+
+analyze:
+    @dart analyze
+
+install:
+    @dart pub get
+
+update:
+    @dart pub upgrade
+"#
+            }
+        }
+    }
 }

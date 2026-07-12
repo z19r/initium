@@ -510,25 +510,69 @@ async fn test_project_type_detection_flutter_top_level_section() {
 }
 
 #[tokio::test]
-async fn test_generate_dart_analysis_options_and_gitignore() {
+async fn test_generate_dart_config() {
     let temp_dir = TempDir::new().unwrap();
     let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
 
-    generator.generate_dart_analysis_options().await.unwrap();
+    generator
+        .generate_dart_with_template("default")
+        .await
+        .unwrap();
+
+    temp_dir
+        .child(".editorconfig")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".prettierrc")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("pubspec.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".gitignore")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("justfile")
+        .assert(predicates::path::exists());
+
+    let pubspec = std::fs::read_to_string(temp_dir.child("pubspec.yaml").path()).unwrap();
+    assert!(pubspec.contains("name: my_package"));
+
     let analysis_options =
         std::fs::read_to_string(temp_dir.child("analysis_options.yaml").path()).unwrap();
     assert!(analysis_options.contains("package:lints/recommended.yaml"));
     assert!(analysis_options.contains("prefer_single_quotes"));
 
-    // Default template: pubspec.lock is NOT ignored
-    generator.generate_dart_gitignore("default").await.unwrap();
     let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
-    assert!(gitignore.contains(".dart_tool/"));
     assert!(!gitignore.contains("pubspec.lock"));
 
-    // Package template: pubspec.lock IS ignored
-    std::fs::remove_file(temp_dir.child(".gitignore").path()).unwrap();
-    generator.generate_dart_gitignore("package").await.unwrap();
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("Dart Project Justfile"));
+}
+
+#[tokio::test]
+async fn test_generate_dart_config_with_templates() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    generator.generate_dart_with_template("cli").await.unwrap();
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("bin/main.dart"));
+
+    std::fs::remove_file(temp_dir.child("justfile").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("pubspec.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".editorconfig").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".prettierrc").path()).unwrap();
+
+    let force_generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), false, true);
+    force_generator
+        .generate_dart_with_template("package")
+        .await
+        .unwrap();
     let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
     assert!(gitignore.contains("pubspec.lock"));
 }

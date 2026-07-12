@@ -288,3 +288,27 @@ fn test_dart_pubspec_content_generation() {
     assert!(content.contains("homepage:"));
     assert!(content.contains("repository:"));
 }
+
+#[test]
+fn test_dart_justfile_content_generation() {
+    let temp_dir = PathBuf::from("/tmp");
+    let generator = ConfigGenerator::new(temp_dir);
+
+    // Test default template
+    let content = generator.get_dart_justfile_content("default");
+    assert!(content.contains("Dart Project Justfile"));
+    assert!(content.contains("dart run"));
+    assert!(content.contains("dart test"));
+    assert!(content.contains("dart analyze"));
+    assert!(!content.contains("dart compile exe"));
+    assert!(!content.contains("publish-check"));
+
+    // Test cli template
+    let content = generator.get_dart_justfile_content("cli");
+    assert!(content.contains("dart compile exe"));
+
+    // Test package template
+    let content = generator.get_dart_justfile_content("package");
+    assert!(content.contains("publish-check"));
+    assert!(content.contains("test-coverage"));
+}

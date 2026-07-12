@@ -89,6 +89,21 @@ fn test_all_dart_templates() {
 }
 
 #[test]
+fn test_dart_justfile_templates() {
+    let temp_dir = std::env::temp_dir();
+    let generator = ConfigGenerator::new(temp_dir);
+
+    let content = generator.get_dart_justfile_content("default");
+    assert!(content.contains("dart pub get"));
+
+    let content = generator.get_dart_justfile_content("cli");
+    assert!(content.contains("bin/main.dart"));
+
+    let content = generator.get_dart_justfile_content("package");
+    assert!(content.contains("dart pub publish --dry-run"));
+}
+
+#[test]
 fn test_pyproject_toml_templates() {
     let temp_dir = std::env::temp_dir();
     let generator = ConfigGenerator::new(temp_dir);
