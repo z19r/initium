@@ -142,6 +142,33 @@ impl GitHooksGenerator {
         Ok(())
     }
 
+    #[allow(dead_code)]
+    pub async fn generate_flutter_hooks(
+        &self,
+        template: &str,
+        force: bool,
+    ) -> Result<(), InitiumError> {
+        let hooks_dir = self.target_dir.join(".git").join("hooks");
+
+        if !hooks_dir.exists() {
+            return Err(InitiumError::GitNotInitialized);
+        }
+
+        let pre_commit_content = self.get_flutter_pre_commit_hook(template);
+        self.write_hook_file(&hooks_dir.join("pre-commit"), &pre_commit_content, force)
+            .await?;
+
+        let pre_push_content = self.get_flutter_pre_push_hook(template);
+        self.write_hook_file(&hooks_dir.join("pre-push"), &pre_push_content, force)
+            .await?;
+
+        let commit_msg_content = self.get_commit_msg_hook();
+        self.write_hook_file(&hooks_dir.join("commit-msg"), &commit_msg_content, force)
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn generate_rust_hooks(
         &self,
         template: &str,
@@ -1122,6 +1149,47 @@ echo "🧪 Running Dart tests..."
 dart test
 
 echo "✅ Dart pre-push checks passed!"
+"#
+        .to_string()
+    }
+
+    // Flutter hooks (content does not vary by template)
+    #[allow(dead_code)]
+    fn get_flutter_pre_commit_hook(&self, _template: &str) -> String {
+        r#"#!/bin/bash
+# Flutter Pre-commit Hook
+set -e
+
+echo "🔍 Running Flutter pre-commit checks..."
+
+if ! command -v flutter &> /dev/null; then
+    echo "❌ Flutter not found. Please install the Flutter SDK."
+    exit 1
+fi
+
+echo "🎨 Checking formatting..."
+dart format --output=none --set-exit-if-changed .
+
+echo "🔍 Running flutter analyze..."
+flutter analyze
+
+echo "✅ Flutter pre-commit checks passed!"
+"#
+        .to_string()
+    }
+
+    #[allow(dead_code)]
+    fn get_flutter_pre_push_hook(&self, _template: &str) -> String {
+        r#"#!/bin/bash
+# Flutter Pre-push Hook
+set -e
+
+echo "🚀 Running Flutter pre-push checks..."
+
+echo "🧪 Running Flutter tests..."
+flutter test
+
+echo "✅ Flutter pre-push checks passed!"
 "#
         .to_string()
     }

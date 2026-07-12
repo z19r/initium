@@ -819,3 +819,45 @@ async fn test_generate_dart_hooks_without_git_fails() {
         initium::error::InitiumError::GitNotInitialized
     ));
 }
+
+#[tokio::test]
+async fn test_generate_flutter_hooks() {
+    let temp_dir = TempDir::new().unwrap();
+    std::process::Command::new("git")
+        .arg("init")
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("git init");
+
+    let hooks_generator = initium::GitHooksGenerator::new(temp_dir.path().to_path_buf());
+    hooks_generator
+        .generate_flutter_hooks("default", false)
+        .await
+        .unwrap();
+
+    let hooks_dir = temp_dir.path().join(".git").join("hooks");
+    assert!(hooks_dir.join("pre-commit").exists());
+    assert!(hooks_dir.join("pre-push").exists());
+    assert!(hooks_dir.join("commit-msg").exists());
+
+    let pre_commit = std::fs::read_to_string(hooks_dir.join("pre-commit")).unwrap();
+    assert!(pre_commit.contains("flutter analyze"));
+    assert!(pre_commit.contains("dart format"));
+
+    let pre_push = std::fs::read_to_string(hooks_dir.join("pre-push")).unwrap();
+    assert!(pre_push.contains("flutter test"));
+}
+
+#[tokio::test]
+async fn test_generate_flutter_hooks_without_git_fails() {
+    let temp_dir = TempDir::new().unwrap();
+    let hooks_generator = initium::GitHooksGenerator::new(temp_dir.path().to_path_buf());
+    let result = hooks_generator
+        .generate_flutter_hooks("default", false)
+        .await;
+    assert!(result.is_err());
+    assert!(matches!(
+        result.unwrap_err(),
+        initium::error::InitiumError::GitNotInitialized
+    ));
+}
