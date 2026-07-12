@@ -76,6 +76,19 @@ fn test_all_rust_templates() {
 }
 
 #[test]
+fn test_all_dart_templates() {
+    let temp_dir = std::env::temp_dir();
+    let generator = ConfigGenerator::new(temp_dir);
+
+    let templates = ["default", "cli", "package"];
+    for template in templates {
+        let content = generator.get_dart_pubspec_content(template);
+        assert!(!content.is_empty());
+        assert!(content.contains("environment:"));
+    }
+}
+
+#[test]
 fn test_pyproject_toml_templates() {
     let temp_dir = std::env::temp_dir();
     let generator = ConfigGenerator::new(temp_dir);

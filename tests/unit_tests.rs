@@ -263,3 +263,28 @@ fn test_ruby_package_json_valid_json() {
         );
     }
 }
+
+#[test]
+fn test_dart_pubspec_content_generation() {
+    let temp_dir = PathBuf::from("/tmp");
+    let generator = ConfigGenerator::new(temp_dir);
+
+    // Test default template
+    let content = generator.get_dart_pubspec_content("default");
+    assert!(content.contains("name: my_package"));
+    assert!(content.contains("publish_to: 'none'"));
+    assert!(content.contains("sdk: ^3.0.0"));
+    assert!(!content.contains("executables:"));
+    assert!(!content.contains("homepage:"));
+
+    // Test cli template
+    let content = generator.get_dart_pubspec_content("cli");
+    assert!(content.contains("executables:"));
+    assert!(content.contains("publish_to: 'none'"));
+
+    // Test package template
+    let content = generator.get_dart_pubspec_content("package");
+    assert!(!content.contains("publish_to: 'none'"));
+    assert!(content.contains("homepage:"));
+    assert!(content.contains("repository:"));
+}

@@ -1322,4 +1322,56 @@ strict = true
             }
         }
     }
+
+    #[allow(dead_code)]
+    pub fn get_dart_pubspec_content(&self, template: &str) -> &'static str {
+        match template {
+            "cli" => {
+                r#"name: my_package
+description: A Dart project.
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.0.0
+
+executables:
+  my_package:
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
+"#
+            }
+            "package" => {
+                r#"name: my_package
+description: A Dart project.
+version: 0.1.0
+homepage: https://github.com/your-org/my_package
+repository: https://github.com/your-org/my_package
+
+environment:
+  sdk: ^3.0.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
+"#
+            }
+            _ => {
+                r#"name: my_package
+description: A Dart project.
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.0.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
+"#
+            }
+        }
+    }
 }
