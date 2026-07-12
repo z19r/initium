@@ -455,6 +455,132 @@ impl CommandHandler {
         Ok(())
     }
 
+    pub async fn handle_dart(&self, template: Option<String>) -> Result<(), InitiumError> {
+        let template_name = template.as_deref().unwrap_or("default");
+        let generator = self.make_generator();
+
+        if self.dry_run {
+            println!(
+                "{}",
+                format!(
+                    "🎯 [DRY RUN] Would generate Dart project configuration (template: {})...",
+                    template_name
+                )
+                .blue()
+            );
+        } else {
+            println!(
+                "{}",
+                format!(
+                    "🎯 Generating Dart project configuration (template: {})...",
+                    template_name
+                )
+                .green()
+            );
+        }
+
+        generator.generate_dart_with_template(template_name).await?;
+
+        if self.dry_run {
+            if self.hooks {
+                println!(
+                    "{}",
+                    format!(
+                        "🪝 [DRY RUN] Would generate git hooks for Dart project (template: {})...",
+                        template_name
+                    )
+                    .blue()
+                );
+            }
+        } else {
+            println!(
+                "{}",
+                "✅ Dart configuration files generated successfully!".green()
+            );
+
+            if self.hooks {
+                println!(
+                    "{}",
+                    format!(
+                        "🪝 Generating git hooks for Dart project (template: {})...",
+                        template_name
+                    )
+                    .green()
+                );
+                let hooks_generator = GitHooksGenerator::new(self.target_dir.clone());
+                hooks_generator
+                    .generate_dart_hooks(template_name, self.force)
+                    .await?;
+                println!("{}", "✅ Git hooks generated successfully!".green());
+            }
+        }
+        Ok(())
+    }
+
+    pub async fn handle_flutter(&self, template: Option<String>) -> Result<(), InitiumError> {
+        let template_name = template.as_deref().unwrap_or("default");
+        let generator = self.make_generator();
+
+        if self.dry_run {
+            println!(
+                "{}",
+                format!(
+                    "🦋 [DRY RUN] Would generate Flutter project configuration (template: {})...",
+                    template_name
+                )
+                .blue()
+            );
+        } else {
+            println!(
+                "{}",
+                format!(
+                    "🦋 Generating Flutter project configuration (template: {})...",
+                    template_name
+                )
+                .green()
+            );
+        }
+
+        generator
+            .generate_flutter_with_template(template_name)
+            .await?;
+
+        if self.dry_run {
+            if self.hooks {
+                println!(
+                    "{}",
+                    format!(
+                        "🪝 [DRY RUN] Would generate git hooks for Flutter project (template: {})...",
+                        template_name
+                    )
+                    .blue()
+                );
+            }
+        } else {
+            println!(
+                "{}",
+                "✅ Flutter configuration files generated successfully!".green()
+            );
+
+            if self.hooks {
+                println!(
+                    "{}",
+                    format!(
+                        "🪝 Generating git hooks for Flutter project (template: {})...",
+                        template_name
+                    )
+                    .green()
+                );
+                let hooks_generator = GitHooksGenerator::new(self.target_dir.clone());
+                hooks_generator
+                    .generate_flutter_hooks(template_name, self.force)
+                    .await?;
+                println!("{}", "✅ Git hooks generated successfully!".green());
+            }
+        }
+        Ok(())
+    }
+
     pub async fn handle_auto(&self) -> Result<(), InitiumError> {
         let generator = self.make_generator();
 
@@ -595,6 +721,46 @@ impl CommandHandler {
                     );
                 }
             }
+            ProjectType::Dart => {
+                if self.dry_run {
+                    println!(
+                        "{}",
+                        "🎯 [DRY RUN] Would generate Dart project configuration...".blue()
+                    );
+                } else {
+                    println!(
+                        "{}",
+                        "🎯 Detected Dart project, generating configuration...".green()
+                    );
+                }
+                generator.generate_dart_with_template("default").await?;
+                if !self.dry_run {
+                    println!(
+                        "{}",
+                        "✅ Dart configuration files generated successfully!".green()
+                    );
+                }
+            }
+            ProjectType::Flutter => {
+                if self.dry_run {
+                    println!(
+                        "{}",
+                        "🦋 [DRY RUN] Would generate Flutter project configuration...".blue()
+                    );
+                } else {
+                    println!(
+                        "{}",
+                        "🦋 Detected Flutter project, generating configuration...".green()
+                    );
+                }
+                generator.generate_flutter_with_template("default").await?;
+                if !self.dry_run {
+                    println!(
+                        "{}",
+                        "✅ Flutter configuration files generated successfully!".green()
+                    );
+                }
+            }
             ProjectType::Basic => {
                 if self.dry_run {
                     println!(
@@ -615,8 +781,6 @@ impl CommandHandler {
                     );
                 }
             }
-            // Full Dart/Flutter auto-generate wiring lands in Task 10
-            ProjectType::Dart | ProjectType::Flutter => {}
         }
         Ok(())
     }
@@ -658,6 +822,8 @@ impl CommandHandler {
         println!("  • .clippy.toml (Rust projects)");
         println!("  • .cargo/config.toml (Rust projects)");
         println!("  • .shellcheckrc (Bash projects)");
+        println!("  • pubspec.yaml (Dart/Flutter projects)");
+        println!("  • analysis_options.yaml (Dart/Flutter projects)");
         println!("  • justfile (all projects)");
         println!();
         println!("🪝 Available git hooks (with --hooks flag):");
@@ -673,6 +839,8 @@ impl CommandHandler {
         println!("  • Go: default, web, cli");
         println!("  • Rust: default, web, cli");
         println!("  • Bash: default, devops, cli");
+        println!("  • Dart: default, cli, package");
+        println!("  • Flutter: default, package, plugin");
         println!();
         println!("🚀 Available commands:");
         println!("  • basic - Generate basic project configs");
@@ -682,6 +850,8 @@ impl CommandHandler {
         println!("  • go - Generate Go project configs");
         println!("  • rust - Generate Rust project configs");
         println!("  • bash - Generate Bash project configs");
+        println!("  • dart - Generate Dart project configs");
+        println!("  • flutter - Generate Flutter project configs");
         println!("  • auto - Auto-detect project type");
         println!("  • interactive - Guided setup");
         println!("  • list - Show this help");

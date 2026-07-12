@@ -253,6 +253,78 @@ fn test_cli_rust_command_with_template() {
 }
 
 #[test]
+fn test_cli_dart_command() {
+    let temp_dir = assert_fs::TempDir::new().unwrap();
+    let mut cmd = Command::from_std(std::process::Command::new(assert_cmd::cargo::cargo_bin!(
+        "initium"
+    )));
+    cmd.arg("--target")
+        .arg(temp_dir.path())
+        .arg("--dry-run")
+        .arg("dart");
+
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("DRY RUN"))
+        .stdout(predicate::str::contains("Dart project configuration"));
+}
+
+#[test]
+fn test_cli_dart_command_with_template() {
+    let temp_dir = assert_fs::TempDir::new().unwrap();
+    let mut cmd = Command::from_std(std::process::Command::new(assert_cmd::cargo::cargo_bin!(
+        "initium"
+    )));
+    cmd.arg("--target")
+        .arg(temp_dir.path())
+        .arg("--dry-run")
+        .arg("dart")
+        .arg("--template")
+        .arg("cli");
+
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("DRY RUN"))
+        .stdout(predicate::str::contains("template: cli"));
+}
+
+#[test]
+fn test_cli_flutter_command() {
+    let temp_dir = assert_fs::TempDir::new().unwrap();
+    let mut cmd = Command::from_std(std::process::Command::new(assert_cmd::cargo::cargo_bin!(
+        "initium"
+    )));
+    cmd.arg("--target")
+        .arg(temp_dir.path())
+        .arg("--dry-run")
+        .arg("flutter");
+
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("DRY RUN"))
+        .stdout(predicate::str::contains("Flutter project configuration"));
+}
+
+#[test]
+fn test_cli_flutter_command_with_template() {
+    let temp_dir = assert_fs::TempDir::new().unwrap();
+    let mut cmd = Command::from_std(std::process::Command::new(assert_cmd::cargo::cargo_bin!(
+        "initium"
+    )));
+    cmd.arg("--target")
+        .arg(temp_dir.path())
+        .arg("--dry-run")
+        .arg("flutter")
+        .arg("--template")
+        .arg("plugin");
+
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::contains("DRY RUN"))
+        .stdout(predicate::str::contains("template: plugin"));
+}
+
+#[test]
 fn test_cli_auto_command() {
     let temp_dir = assert_fs::TempDir::new().unwrap();
     let mut cmd = Command::from_std(std::process::Command::new(assert_cmd::cargo::cargo_bin!(
