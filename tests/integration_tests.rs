@@ -468,6 +468,187 @@ async fn test_project_type_detection() {
 }
 
 #[tokio::test]
+async fn test_project_type_detection_dart() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_package\ndescription: A Dart project.\nversion: 0.1.0\n\nenvironment:\n  sdk: ^3.0.0\n",
+    )
+    .unwrap();
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Dart));
+}
+
+#[tokio::test]
+async fn test_project_type_detection_flutter_sdk_dependency() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_app\ndescription: A new Flutter project.\nversion: 0.1.0+1\n\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Flutter));
+}
+
+#[tokio::test]
+async fn test_project_type_detection_flutter_top_level_section() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_package\nenvironment:\n  sdk: ^3.0.0\n\nflutter:\n  uses-material-design: true\n",
+    )
+    .unwrap();
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Flutter));
+}
+
+#[tokio::test]
+async fn test_generate_dart_config() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    generator
+        .generate_dart_with_template("default")
+        .await
+        .unwrap();
+
+    temp_dir
+        .child(".editorconfig")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".prettierrc")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("pubspec.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".gitignore")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("justfile")
+        .assert(predicates::path::exists());
+
+    let pubspec = std::fs::read_to_string(temp_dir.child("pubspec.yaml").path()).unwrap();
+    assert!(pubspec.contains("name: my_package"));
+
+    let analysis_options =
+        std::fs::read_to_string(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    assert!(analysis_options.contains("package:lints/recommended.yaml"));
+    assert!(analysis_options.contains("prefer_single_quotes"));
+
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(!gitignore.contains("pubspec.lock"));
+
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("Dart Project Justfile"));
+}
+
+#[tokio::test]
+async fn test_generate_dart_config_with_templates() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    generator.generate_dart_with_template("cli").await.unwrap();
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("bin/main.dart"));
+
+    std::fs::remove_file(temp_dir.child("justfile").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("pubspec.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".editorconfig").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".prettierrc").path()).unwrap();
+
+    let force_generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), false, true);
+    force_generator
+        .generate_dart_with_template("package")
+        .await
+        .unwrap();
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(gitignore.contains("pubspec.lock"));
+}
+
+#[tokio::test]
+async fn test_generate_flutter_config() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    generator
+        .generate_flutter_with_template("default")
+        .await
+        .unwrap();
+
+    temp_dir
+        .child(".editorconfig")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".prettierrc")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("pubspec.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child(".gitignore")
+        .assert(predicates::path::exists());
+    temp_dir
+        .child("justfile")
+        .assert(predicates::path::exists());
+
+    let pubspec = std::fs::read_to_string(temp_dir.child("pubspec.yaml").path()).unwrap();
+    assert!(pubspec.contains("name: my_app"));
+
+    let analysis_options =
+        std::fs::read_to_string(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    assert!(analysis_options.contains("package:flutter_lints/flutter.yaml"));
+    assert!(analysis_options.contains("*.freezed.dart"));
+
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(!gitignore.contains("pubspec.lock"));
+
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("Flutter Project Justfile"));
+}
+
+#[tokio::test]
+async fn test_generate_flutter_config_with_templates() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    generator
+        .generate_flutter_with_template("plugin")
+        .await
+        .unwrap();
+    let justfile = std::fs::read_to_string(temp_dir.child("justfile").path()).unwrap();
+    assert!(justfile.contains("run-example"));
+
+    std::fs::remove_file(temp_dir.child("justfile").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("pubspec.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".editorconfig").path()).unwrap();
+    std::fs::remove_file(temp_dir.child(".prettierrc").path()).unwrap();
+
+    let force_generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), false, true);
+    force_generator
+        .generate_flutter_with_template("package")
+        .await
+        .unwrap();
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(gitignore.contains("pubspec.lock"));
+}
+
+#[tokio::test]
 async fn test_dry_run_modes() {
     let temp_dir = TempDir::new().unwrap();
     let generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), true, false);
@@ -597,4 +778,132 @@ async fn test_editor_config_sections() {
 
     // reg  *.[ch]
     assert!(editor_config.contains("[reg*.[ch]]"));
+}
+
+#[tokio::test]
+async fn test_generate_dart_hooks() {
+    let temp_dir = TempDir::new().unwrap();
+    std::process::Command::new("git")
+        .arg("init")
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("git init");
+
+    let hooks_generator = initium::GitHooksGenerator::new(temp_dir.path().to_path_buf());
+    hooks_generator
+        .generate_dart_hooks("default", false)
+        .await
+        .unwrap();
+
+    let hooks_dir = temp_dir.path().join(".git").join("hooks");
+    assert!(hooks_dir.join("pre-commit").exists());
+    assert!(hooks_dir.join("pre-push").exists());
+    assert!(hooks_dir.join("commit-msg").exists());
+
+    let pre_commit = std::fs::read_to_string(hooks_dir.join("pre-commit")).unwrap();
+    assert!(pre_commit.contains("dart format"));
+    assert!(pre_commit.contains("dart analyze"));
+
+    let pre_push = std::fs::read_to_string(hooks_dir.join("pre-push")).unwrap();
+    assert!(pre_push.contains("dart test"));
+}
+
+#[tokio::test]
+async fn test_generate_dart_hooks_without_git_fails() {
+    let temp_dir = TempDir::new().unwrap();
+    let hooks_generator = initium::GitHooksGenerator::new(temp_dir.path().to_path_buf());
+    let result = hooks_generator.generate_dart_hooks("default", false).await;
+    assert!(result.is_err());
+    assert!(matches!(
+        result.unwrap_err(),
+        initium::error::InitiumError::GitNotInitialized
+    ));
+}
+
+#[tokio::test]
+async fn test_generate_flutter_hooks() {
+    let temp_dir = TempDir::new().unwrap();
+    std::process::Command::new("git")
+        .arg("init")
+        .current_dir(temp_dir.path())
+        .output()
+        .expect("git init");
+
+    let hooks_generator = initium::GitHooksGenerator::new(temp_dir.path().to_path_buf());
+    hooks_generator
+        .generate_flutter_hooks("default", false)
+        .await
+        .unwrap();
+
+    let hooks_dir = temp_dir.path().join(".git").join("hooks");
+    assert!(hooks_dir.join("pre-commit").exists());
+    assert!(hooks_dir.join("pre-push").exists());
+    assert!(hooks_dir.join("commit-msg").exists());
+
+    let pre_commit = std::fs::read_to_string(hooks_dir.join("pre-commit")).unwrap();
+    assert!(pre_commit.contains("flutter analyze"));
+    assert!(pre_commit.contains("dart format"));
+
+    let pre_push = std::fs::read_to_string(hooks_dir.join("pre-push")).unwrap();
+    assert!(pre_push.contains("flutter test"));
+}
+
+#[tokio::test]
+async fn test_generate_flutter_hooks_without_git_fails() {
+    let temp_dir = TempDir::new().unwrap();
+    let hooks_generator = initium::GitHooksGenerator::new(temp_dir.path().to_path_buf());
+    let result = hooks_generator
+        .generate_flutter_hooks("default", false)
+        .await;
+    assert!(result.is_err());
+    assert!(matches!(
+        result.unwrap_err(),
+        initium::error::InitiumError::GitNotInitialized
+    ));
+}
+
+#[tokio::test]
+async fn test_auto_detect_generates_dart_config() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_package\nenvironment:\n  sdk: ^3.0.0\n",
+    )
+    .unwrap();
+
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Dart));
+
+    generator
+        .generate_dart_with_template("default")
+        .await
+        .unwrap();
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
+}
+
+#[tokio::test]
+async fn test_auto_detect_generates_flutter_config() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_app\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Flutter));
+
+    generator
+        .generate_flutter_with_template("default")
+        .await
+        .unwrap();
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
 }

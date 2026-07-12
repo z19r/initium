@@ -5,6 +5,8 @@ use std::path::PathBuf;
 pub mod bash;
 pub mod basic;
 pub mod common;
+pub mod dart;
+pub mod flutter;
 pub mod go;
 pub mod hooks;
 pub mod node;
@@ -21,6 +23,8 @@ pub enum ProjectType {
     Go,
     Rust,
     Bash,
+    Dart,
+    Flutter,
 }
 
 pub struct ConfigGenerator {
@@ -92,6 +96,16 @@ impl ConfigGenerator {
             || self.target_dir.join("pkg").exists()
         {
             return Ok(ProjectType::Go);
+        }
+
+        // Check for Dart/Flutter project
+        if self.target_dir.join("pubspec.yaml").exists() {
+            let pubspec_content =
+                std::fs::read_to_string(self.target_dir.join("pubspec.yaml")).unwrap_or_default();
+            if pubspec_content.contains("sdk: flutter") || pubspec_content.contains("\nflutter:") {
+                return Ok(ProjectType::Flutter);
+            }
+            return Ok(ProjectType::Dart);
         }
 
         // Check for Rust project
@@ -1305,6 +1319,323 @@ strict = true
     "typescript": "^5.0.0"
   }
 }"#
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn get_dart_pubspec_content(&self, template: &str) -> &'static str {
+        match template {
+            "cli" => {
+                r#"name: my_package
+description: A Dart project.
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.0.0
+
+executables:
+  my_package:
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
+"#
+            }
+            "package" => {
+                r#"name: my_package
+description: A Dart project.
+version: 0.1.0
+homepage: https://github.com/your-org/my_package
+repository: https://github.com/your-org/my_package
+
+environment:
+  sdk: ^3.0.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
+"#
+            }
+            _ => {
+                r#"name: my_package
+description: A Dart project.
+version: 0.1.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.0.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.24.0
+"#
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn get_dart_justfile_content(&self, template: &str) -> &'static str {
+        match template {
+            "cli" => {
+                r#"# Dart Project Justfile
+default:
+    @just --list
+
+run *ARGS:
+    @dart run bin/main.dart {{ARGS}}
+
+build:
+    @dart compile exe bin/main.dart -o bin/app
+
+test:
+    @dart test
+
+fmt:
+    @dart format .
+
+fmt-check:
+    @dart format --output=none --set-exit-if-changed .
+
+analyze:
+    @dart analyze
+
+install:
+    @dart pub get
+
+update:
+    @dart pub upgrade
+"#
+            }
+            "package" => {
+                r#"# Dart Project Justfile
+default:
+    @just --list
+
+test:
+    @dart test
+
+test-coverage:
+    @dart test --coverage=coverage
+    @dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.dart_tool/package_config.json --report-on=lib
+
+fmt:
+    @dart format .
+
+fmt-check:
+    @dart format --output=none --set-exit-if-changed .
+
+analyze:
+    @dart analyze
+
+publish-check:
+    @dart pub publish --dry-run
+
+install:
+    @dart pub get
+
+update:
+    @dart pub upgrade
+"#
+            }
+            _ => {
+                r#"# Dart Project Justfile
+default:
+    @just --list
+
+run:
+    @dart run
+
+test:
+    @dart test
+
+fmt:
+    @dart format .
+
+fmt-check:
+    @dart format --output=none --set-exit-if-changed .
+
+analyze:
+    @dart analyze
+
+install:
+    @dart pub get
+
+update:
+    @dart pub upgrade
+"#
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn get_flutter_pubspec_content(&self, template: &str) -> &'static str {
+        match template {
+            "package" => {
+                r#"name: my_package
+description: A Flutter package.
+version: 0.1.0
+homepage: https://github.com/your-org/my_package
+repository: https://github.com/your-org/my_package
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+"#
+            }
+            "plugin" => {
+                r#"name: my_plugin
+description: A Flutter plugin.
+version: 0.1.0
+homepage: https://github.com/your-org/my_plugin
+repository: https://github.com/your-org/my_plugin
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.example.my_plugin
+        pluginClass: MyPluginPlugin
+      ios:
+        pluginClass: MyPluginPlugin
+"#
+            }
+            _ => {
+                r#"name: my_app
+description: A new Flutter project.
+version: 0.1.0+1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+"#
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn get_flutter_justfile_content(&self, template: &str) -> &'static str {
+        match template {
+            "package" => {
+                r#"# Flutter Project Justfile
+default:
+    @just --list
+
+test:
+    @flutter test
+
+fmt:
+    @dart format .
+
+analyze:
+    @flutter analyze
+
+publish-check:
+    @flutter pub publish --dry-run
+
+install:
+    @flutter pub get
+
+clean:
+    @flutter clean
+"#
+            }
+            "plugin" => {
+                r#"# Flutter Project Justfile
+default:
+    @just --list
+
+test:
+    @flutter test
+
+fmt:
+    @dart format .
+
+analyze:
+    @flutter analyze
+
+publish-check:
+    @flutter pub publish --dry-run
+
+run-example:
+    @cd example && flutter run
+
+test-example:
+    @cd example && flutter test
+
+install:
+    @flutter pub get
+
+clean:
+    @flutter clean
+"#
+            }
+            _ => {
+                r#"# Flutter Project Justfile
+default:
+    @just --list
+
+run:
+    @flutter run
+
+test:
+    @flutter test
+
+fmt:
+    @dart format .
+
+analyze:
+    @flutter analyze
+
+build-apk:
+    @flutter build apk
+
+build-ios:
+    @flutter build ios
+
+install:
+    @flutter pub get
+
+clean:
+    @flutter clean
+"#
             }
         }
     }

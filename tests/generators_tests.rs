@@ -76,6 +76,63 @@ fn test_all_rust_templates() {
 }
 
 #[test]
+fn test_all_dart_templates() {
+    let temp_dir = std::env::temp_dir();
+    let generator = ConfigGenerator::new(temp_dir);
+
+    let templates = ["default", "cli", "package"];
+    for template in templates {
+        let content = generator.get_dart_pubspec_content(template);
+        assert!(!content.is_empty());
+        assert!(content.contains("environment:"));
+    }
+}
+
+#[test]
+fn test_dart_justfile_templates() {
+    let temp_dir = std::env::temp_dir();
+    let generator = ConfigGenerator::new(temp_dir);
+
+    let content = generator.get_dart_justfile_content("default");
+    assert!(content.contains("dart pub get"));
+
+    let content = generator.get_dart_justfile_content("cli");
+    assert!(content.contains("bin/main.dart"));
+
+    let content = generator.get_dart_justfile_content("package");
+    assert!(content.contains("dart pub publish --dry-run"));
+}
+
+#[test]
+fn test_all_flutter_templates() {
+    let temp_dir = std::env::temp_dir();
+    let generator = ConfigGenerator::new(temp_dir);
+
+    let templates = ["default", "package", "plugin"];
+    for template in templates {
+        let content = generator.get_flutter_pubspec_content(template);
+        assert!(!content.is_empty());
+        assert!(content.contains("environment:"));
+        assert!(content.contains("sdk: flutter"));
+    }
+}
+
+#[test]
+fn test_flutter_justfile_templates() {
+    let temp_dir = std::env::temp_dir();
+    let generator = ConfigGenerator::new(temp_dir);
+
+    let content = generator.get_flutter_justfile_content("default");
+    assert!(content.contains("flutter pub get"));
+
+    let content = generator.get_flutter_justfile_content("package");
+    assert!(content.contains("flutter pub publish --dry-run"));
+
+    let content = generator.get_flutter_justfile_content("plugin");
+    assert!(content.contains("cd example && flutter run"));
+}
+
+#[test]
 fn test_pyproject_toml_templates() {
     let temp_dir = std::env::temp_dir();
     let generator = ConfigGenerator::new(temp_dir);

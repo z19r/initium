@@ -263,3 +263,104 @@ fn test_ruby_package_json_valid_json() {
         );
     }
 }
+
+#[test]
+fn test_dart_pubspec_content_generation() {
+    let temp_dir = PathBuf::from("/tmp");
+    let generator = ConfigGenerator::new(temp_dir);
+
+    // Test default template
+    let content = generator.get_dart_pubspec_content("default");
+    assert!(content.contains("name: my_package"));
+    assert!(content.contains("publish_to: 'none'"));
+    assert!(content.contains("sdk: ^3.0.0"));
+    assert!(!content.contains("executables:"));
+    assert!(!content.contains("homepage:"));
+
+    // Test cli template
+    let content = generator.get_dart_pubspec_content("cli");
+    assert!(content.contains("executables:"));
+    assert!(content.contains("publish_to: 'none'"));
+
+    // Test package template
+    let content = generator.get_dart_pubspec_content("package");
+    assert!(!content.contains("publish_to: 'none'"));
+    assert!(content.contains("homepage:"));
+    assert!(content.contains("repository:"));
+}
+
+#[test]
+fn test_dart_justfile_content_generation() {
+    let temp_dir = PathBuf::from("/tmp");
+    let generator = ConfigGenerator::new(temp_dir);
+
+    // Test default template
+    let content = generator.get_dart_justfile_content("default");
+    assert!(content.contains("Dart Project Justfile"));
+    assert!(content.contains("dart run"));
+    assert!(content.contains("dart test"));
+    assert!(content.contains("dart analyze"));
+    assert!(!content.contains("dart compile exe"));
+    assert!(!content.contains("publish-check"));
+
+    // Test cli template
+    let content = generator.get_dart_justfile_content("cli");
+    assert!(content.contains("dart compile exe"));
+
+    // Test package template
+    let content = generator.get_dart_justfile_content("package");
+    assert!(content.contains("publish-check"));
+    assert!(content.contains("test-coverage"));
+}
+
+#[test]
+fn test_flutter_pubspec_content_generation() {
+    let temp_dir = PathBuf::from("/tmp");
+    let generator = ConfigGenerator::new(temp_dir);
+
+    // Test default template (app)
+    let content = generator.get_flutter_pubspec_content("default");
+    assert!(content.contains("name: my_app"));
+    assert!(content.contains("sdk: flutter"));
+    assert!(content.contains("cupertino_icons"));
+    assert!(content.contains("uses-material-design: true"));
+    assert!(!content.contains("plugin_platform_interface"));
+
+    // Test package template
+    let content = generator.get_flutter_pubspec_content("package");
+    assert!(!content.contains("cupertino_icons"));
+    assert!(!content.contains("uses-material-design"));
+    assert!(content.contains("homepage:"));
+    assert!(!content.contains("plugin_platform_interface"));
+
+    // Test plugin template
+    let content = generator.get_flutter_pubspec_content("plugin");
+    assert!(content.contains("plugin_platform_interface"));
+    assert!(content.contains("pluginClass: MyPluginPlugin"));
+}
+
+#[test]
+fn test_flutter_justfile_content_generation() {
+    let temp_dir = PathBuf::from("/tmp");
+    let generator = ConfigGenerator::new(temp_dir);
+
+    // Test default template
+    let content = generator.get_flutter_justfile_content("default");
+    assert!(content.contains("Flutter Project Justfile"));
+    assert!(content.contains("flutter run"));
+    assert!(content.contains("flutter test"));
+    assert!(content.contains("flutter build apk"));
+    assert!(!content.contains("publish-check"));
+    assert!(!content.contains("run-example"));
+
+    // Test package template
+    let content = generator.get_flutter_justfile_content("package");
+    assert!(content.contains("publish-check"));
+    assert!(!content.contains("flutter run"));
+    assert!(!content.contains("run-example"));
+
+    // Test plugin template
+    let content = generator.get_flutter_justfile_content("plugin");
+    assert!(content.contains("run-example"));
+    assert!(content.contains("test-example"));
+}

@@ -85,6 +85,18 @@ enum Commands {
         #[arg(short, long)]
         template: Option<String>,
     },
+    /// Generate configuration files for a Dart project
+    Dart {
+        /// Template to use (e.g., 'default', 'cli', 'package')
+        #[arg(short, long)]
+        template: Option<String>,
+    },
+    /// Generate configuration files for a Flutter project
+    Flutter {
+        /// Template to use (e.g., 'default', 'package', 'plugin')
+        #[arg(short, long)]
+        template: Option<String>,
+    },
     /// Automatically detect project type and generate appropriate configs
     Auto,
     /// Interactive mode - guided configuration setup
@@ -125,6 +137,8 @@ async fn main() -> Result<(), InitiumError> {
         Commands::Go { template } => handler.handle_go(template).await?,
         Commands::Rust { template } => handler.handle_rust(template).await?,
         Commands::Bash { template } => handler.handle_bash(template).await?,
+        Commands::Dart { template } => handler.handle_dart(template).await?,
+        Commands::Flutter { template } => handler.handle_flutter(template).await?,
         Commands::Auto => handler.handle_auto().await?,
         Commands::Interactive => handler.handle_interactive().await?,
         Commands::List => handler.handle_list(),

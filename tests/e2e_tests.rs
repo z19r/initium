@@ -309,6 +309,148 @@ fn e2e_rust_cli() {
     );
 }
 
+// --- Dart ---
+
+#[test]
+fn e2e_dart_default() {
+    let temp = TempDir::new().unwrap();
+    run_ok(&temp, &["dart"]);
+    let p = temp.path();
+    let pubspec = p.join("pubspec.yaml");
+    assert!(pubspec.exists(), "missing pubspec.yaml");
+    let content = std::fs::read_to_string(&pubspec).unwrap();
+    assert!(
+        content.contains("name: my_package") && content.contains("publish_to: 'none'"),
+        "unexpected pubspec.yaml content:\n{}",
+        content
+    );
+    assert!(p.join("analysis_options.yaml").exists());
+    let gitignore = std::fs::read_to_string(p.join(".gitignore")).unwrap();
+    assert!(!gitignore.contains("pubspec.lock"));
+    assert_valid_json(p.join(".prettierrc").as_path(), "dart default .prettierrc");
+}
+
+#[test]
+fn e2e_dart_cli() {
+    let temp = TempDir::new().unwrap();
+    run_ok(&temp, &["dart", "--template", "cli"]);
+    let justfile = std::fs::read_to_string(temp.path().join("justfile")).unwrap();
+    assert!(justfile.contains("bin/main.dart"));
+}
+
+#[test]
+fn e2e_dart_package() {
+    let temp = TempDir::new().unwrap();
+    run_ok(&temp, &["dart", "--template", "package"]);
+    let gitignore = std::fs::read_to_string(temp.path().join(".gitignore")).unwrap();
+    assert!(gitignore.contains("pubspec.lock"));
+    let pubspec = std::fs::read_to_string(temp.path().join("pubspec.yaml")).unwrap();
+    assert!(!pubspec.contains("publish_to: 'none'"));
+}
+
+// --- Flutter ---
+
+#[test]
+fn e2e_flutter_default() {
+    let temp = TempDir::new().unwrap();
+    run_ok(&temp, &["flutter"]);
+    let p = temp.path();
+    let pubspec = p.join("pubspec.yaml");
+    assert!(pubspec.exists(), "missing pubspec.yaml");
+    let content = std::fs::read_to_string(&pubspec).unwrap();
+    assert!(
+        content.contains("name: my_app") && content.contains("sdk: flutter"),
+        "unexpected pubspec.yaml content:\n{}",
+        content
+    );
+    assert!(p.join("analysis_options.yaml").exists());
+    let gitignore = std::fs::read_to_string(p.join(".gitignore")).unwrap();
+    assert!(!gitignore.contains("pubspec.lock"));
+}
+
+#[test]
+fn e2e_flutter_package() {
+    let temp = TempDir::new().unwrap();
+    run_ok(&temp, &["flutter", "--template", "package"]);
+    let justfile = std::fs::read_to_string(temp.path().join("justfile")).unwrap();
+    assert!(justfile.contains("publish-check"));
+    let gitignore = std::fs::read_to_string(temp.path().join(".gitignore")).unwrap();
+    assert!(gitignore.contains("pubspec.lock"));
+}
+
+#[test]
+fn e2e_flutter_plugin() {
+    let temp = TempDir::new().unwrap();
+    run_ok(&temp, &["flutter", "--template", "plugin"]);
+    let pubspec = std::fs::read_to_string(temp.path().join("pubspec.yaml")).unwrap();
+    assert!(pubspec.contains("plugin_platform_interface"));
+    let justfile = std::fs::read_to_string(temp.path().join("justfile")).unwrap();
+    assert!(justfile.contains("run-example"));
+}
+
+// --- Auto: Dart / Flutter ---
+
+#[test]
+fn e2e_auto_dart() {
+    let temp = TempDir::new().unwrap();
+    std::fs::write(
+        temp.path().join("pubspec.yaml"),
+        "name: my_package\nenvironment:\n  sdk: ^3.0.0\n",
+    )
+    .unwrap();
+    run_ok(&temp, &["auto"]);
+    assert!(temp.path().join("analysis_options.yaml").exists());
+}
+
+#[test]
+fn e2e_auto_flutter() {
+    let temp = TempDir::new().unwrap();
+    std::fs::write(
+        temp.path().join("pubspec.yaml"),
+        "name: my_app\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+    run_ok(&temp, &["auto"]);
+    let justfile = std::fs::read_to_string(temp.path().join("justfile")).unwrap();
+    assert!(justfile.contains("Flutter Project Justfile"));
+}
+
+// --- Hooks: Dart / Flutter ---
+
+#[test]
+fn e2e_hooks_dart() {
+    let temp = TempDir::new().unwrap();
+    std::process::Command::new("git")
+        .arg("init")
+        .current_dir(temp.path())
+        .output()
+        .expect("git init");
+    run_ok(&temp, &["--hooks", "dart"]);
+    let hooks_dir = temp.path().join(".git").join("hooks");
+    assert!(
+        hooks_dir.join("pre-commit").exists() && hooks_dir.join("pre-push").exists(),
+        "expected Dart git hooks in {:?}",
+        hooks_dir
+    );
+}
+
+#[test]
+fn e2e_hooks_flutter() {
+    let temp = TempDir::new().unwrap();
+    std::process::Command::new("git")
+        .arg("init")
+        .current_dir(temp.path())
+        .output()
+        .expect("git init");
+    run_ok(&temp, &["--hooks", "flutter"]);
+    let hooks_dir = temp.path().join(".git").join("hooks");
+    assert!(
+        hooks_dir.join("pre-commit").exists() && hooks_dir.join("pre-push").exists(),
+        "expected Flutter git hooks in {:?}",
+        hooks_dir
+    );
+}
+
 // --- Auto ---
 
 #[test]

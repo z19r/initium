@@ -109,6 +109,34 @@ async fn test_fail_on_exists_rust_project() {
 }
 
 #[tokio::test]
+async fn test_fail_on_exists_dart_project() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    // First generation should succeed
+    let result = generator.generate_dart_with_template("default").await;
+    assert!(result.is_ok());
+
+    // Second generation should succeed (fail_on_exists=false for language projects)
+    let result = generator.generate_dart_with_template("default").await;
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn test_fail_on_exists_flutter_project() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    // First generation should succeed
+    let result = generator.generate_flutter_with_template("default").await;
+    assert!(result.is_ok());
+
+    // Second generation should succeed (fail_on_exists=false for language projects)
+    let result = generator.generate_flutter_with_template("default").await;
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
 async fn test_fail_on_exists_individual_files() {
     let temp_dir = TempDir::new().unwrap();
     let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
@@ -182,6 +210,7 @@ async fn test_fail_on_exists_file_specific_behavior() {
         ".python-version",
         "go.mod",
         "rustfmt.toml",
+        "pubspec.yaml",
     ];
 
     for file in files {
