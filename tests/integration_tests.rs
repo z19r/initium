@@ -468,6 +468,48 @@ async fn test_project_type_detection() {
 }
 
 #[tokio::test]
+async fn test_project_type_detection_dart() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_package\ndescription: A Dart project.\nversion: 0.1.0\n\nenvironment:\n  sdk: ^3.0.0\n",
+    )
+    .unwrap();
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Dart));
+}
+
+#[tokio::test]
+async fn test_project_type_detection_flutter_sdk_dependency() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_app\ndescription: A new Flutter project.\nversion: 0.1.0+1\n\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Flutter));
+}
+
+#[tokio::test]
+async fn test_project_type_detection_flutter_top_level_section() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_package\nenvironment:\n  sdk: ^3.0.0\n\nflutter:\n  uses-material-design: true\n",
+    )
+    .unwrap();
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Flutter));
+}
+
+#[tokio::test]
 async fn test_dry_run_modes() {
     let temp_dir = TempDir::new().unwrap();
     let generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), true, false);
