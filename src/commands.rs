@@ -615,46 +615,8 @@ impl CommandHandler {
                     );
                 }
             }
-            ProjectType::Dart => {
-                if self.dry_run {
-                    println!(
-                        "{}",
-                        "🎯 [DRY RUN] Would generate Dart project configuration...".blue()
-                    );
-                } else {
-                    println!(
-                        "{}",
-                        "🎯 Detected Dart project, generating configuration...".green()
-                    );
-                }
-                generator.generate_dart_with_template("default").await?;
-                if !self.dry_run {
-                    println!(
-                        "{}",
-                        "✅ Dart configuration files generated successfully!".green()
-                    );
-                }
-            }
-            ProjectType::Flutter => {
-                if self.dry_run {
-                    println!(
-                        "{}",
-                        "🐦 [DRY RUN] Would generate Flutter project configuration...".blue()
-                    );
-                } else {
-                    println!(
-                        "{}",
-                        "🐦 Detected Flutter project, generating configuration...".green()
-                    );
-                }
-                generator.generate_flutter_with_template("default").await?;
-                if !self.dry_run {
-                    println!(
-                        "{}",
-                        "✅ Flutter configuration files generated successfully!".green()
-                    );
-                }
-            }
+            // Full Dart/Flutter auto-generate wiring lands in Task 10
+            ProjectType::Dart | ProjectType::Flutter => {}
         }
         Ok(())
     }

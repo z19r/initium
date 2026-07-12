@@ -102,8 +102,7 @@ impl ConfigGenerator {
         if self.target_dir.join("pubspec.yaml").exists() {
             let pubspec_content =
                 std::fs::read_to_string(self.target_dir.join("pubspec.yaml")).unwrap_or_default();
-            if pubspec_content.contains("sdk: flutter") || pubspec_content.contains("\nflutter:")
-            {
+            if pubspec_content.contains("sdk: flutter") || pubspec_content.contains("\nflutter:") {
                 return Ok(ProjectType::Flutter);
             }
             return Ok(ProjectType::Dart);
