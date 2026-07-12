@@ -578,6 +578,36 @@ async fn test_generate_dart_config_with_templates() {
 }
 
 #[tokio::test]
+async fn test_generate_flutter_analysis_options_and_gitignore() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    generator.generate_flutter_analysis_options().await.unwrap();
+    let analysis_options =
+        std::fs::read_to_string(temp_dir.child("analysis_options.yaml").path()).unwrap();
+    assert!(analysis_options.contains("package:flutter_lints/flutter.yaml"));
+    assert!(analysis_options.contains("*.freezed.dart"));
+
+    // Default template: pubspec.lock is NOT ignored
+    generator
+        .generate_flutter_gitignore("default")
+        .await
+        .unwrap();
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(gitignore.contains(".flutter-plugins"));
+    assert!(!gitignore.contains("pubspec.lock"));
+
+    // Plugin template: pubspec.lock IS ignored
+    std::fs::remove_file(temp_dir.child(".gitignore").path()).unwrap();
+    generator
+        .generate_flutter_gitignore("plugin")
+        .await
+        .unwrap();
+    let gitignore = std::fs::read_to_string(temp_dir.child(".gitignore").path()).unwrap();
+    assert!(gitignore.contains("pubspec.lock"));
+}
+
+#[tokio::test]
 async fn test_dry_run_modes() {
     let temp_dir = TempDir::new().unwrap();
     let generator = ConfigGenerator::with_options(temp_dir.path().to_path_buf(), true, false);
