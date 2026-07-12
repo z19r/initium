@@ -861,3 +861,49 @@ async fn test_generate_flutter_hooks_without_git_fails() {
         initium::error::InitiumError::GitNotInitialized
     ));
 }
+
+#[tokio::test]
+async fn test_auto_detect_generates_dart_config() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_package\nenvironment:\n  sdk: ^3.0.0\n",
+    )
+    .unwrap();
+
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Dart));
+
+    generator
+        .generate_dart_with_template("default")
+        .await
+        .unwrap();
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
+}
+
+#[tokio::test]
+async fn test_auto_detect_generates_flutter_config() {
+    let temp_dir = TempDir::new().unwrap();
+    let generator = ConfigGenerator::new(temp_dir.path().to_path_buf());
+
+    std::fs::write(
+        temp_dir.child("pubspec.yaml").path(),
+        "name: my_app\ndependencies:\n  flutter:\n    sdk: flutter\n",
+    )
+    .unwrap();
+
+    let project_type = generator.detect_project_type().await.unwrap();
+    assert!(matches!(project_type, initium::ProjectType::Flutter));
+
+    generator
+        .generate_flutter_with_template("default")
+        .await
+        .unwrap();
+    temp_dir
+        .child("analysis_options.yaml")
+        .assert(predicates::path::exists());
+}
