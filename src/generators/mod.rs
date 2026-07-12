@@ -1468,4 +1468,85 @@ update:
             }
         }
     }
+
+    #[allow(dead_code)]
+    pub fn get_flutter_pubspec_content(&self, template: &str) -> &'static str {
+        match template {
+            "package" => {
+                r#"name: my_package
+description: A Flutter package.
+version: 0.1.0
+homepage: https://github.com/your-org/my_package
+repository: https://github.com/your-org/my_package
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+"#
+            }
+            "plugin" => {
+                r#"name: my_plugin
+description: A Flutter plugin.
+version: 0.1.0
+homepage: https://github.com/your-org/my_plugin
+repository: https://github.com/your-org/my_plugin
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.example.my_plugin
+        pluginClass: MyPluginPlugin
+      ios:
+        pluginClass: MyPluginPlugin
+"#
+            }
+            _ => {
+                r#"name: my_app
+description: A new Flutter project.
+version: 0.1.0+1
+publish_to: 'none'
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+"#
+            }
+        }
+    }
 }

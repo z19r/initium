@@ -104,6 +104,20 @@ fn test_dart_justfile_templates() {
 }
 
 #[test]
+fn test_all_flutter_templates() {
+    let temp_dir = std::env::temp_dir();
+    let generator = ConfigGenerator::new(temp_dir);
+
+    let templates = ["default", "package", "plugin"];
+    for template in templates {
+        let content = generator.get_flutter_pubspec_content(template);
+        assert!(!content.is_empty());
+        assert!(content.contains("environment:"));
+        assert!(content.contains("sdk: flutter"));
+    }
+}
+
+#[test]
 fn test_pyproject_toml_templates() {
     let temp_dir = std::env::temp_dir();
     let generator = ConfigGenerator::new(temp_dir);
