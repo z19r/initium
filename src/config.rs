@@ -30,6 +30,8 @@ pub struct PrettierConfig {
     pub trailing_comma: String,
     pub print_width: u8,
     pub plugins: Option<Vec<String>>,
+    /// Emits `rubySingleQuote` when set. Only meaningful with `@prettier/plugin-ruby`.
+    pub ruby_single_quote: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -183,14 +185,26 @@ impl Default for PrettierConfig {
             trailing_comma: "es5".to_string(),
             print_width: 80,
             plugins: None,
+            ruby_single_quote: None,
         }
     }
 }
 
 impl PrettierConfig {
-    fn with_ruby_plugin(mut self) -> Self {
-        self.single_quote = false;
-        self.plugins = Some(vec!["@prettier/plugin-ruby".to_string()]);
+    /// Configure Prettier as the Ruby formatting source of truth.
+    ///
+    /// `@prettier/plugin-ruby` (npm) drives Ruby style; RuboCop cops that fight
+    /// it are disabled in `.rubocop.yml`. Both JS and Ruby use single quotes.
+    /// When `erb` is set, ERB templates are formatted via
+    /// `@4az/prettier-plugin-html-erb`.
+    fn with_ruby_plugin(mut self, erb: bool) -> Self {
+        self.single_quote = true;
+        self.ruby_single_quote = Some(true);
+        let mut plugins = vec!["@prettier/plugin-ruby".to_string()];
+        if erb {
+            plugins.push("@4az/prettier-plugin-html-erb".to_string());
+        }
+        self.plugins = Some(plugins);
         self
     }
 
@@ -203,6 +217,7 @@ impl PrettierConfig {
                 trailing_comma: "es5".to_string(),
                 print_width: 80,
                 plugins: None,
+                ruby_single_quote: None,
             },
             "airbnb" => Self {
                 semi: true,
@@ -211,8 +226,11 @@ impl PrettierConfig {
                 trailing_comma: "es5".to_string(),
                 print_width: 100,
                 plugins: None,
+                ruby_single_quote: None,
             },
-            "rails" | "sinatra" | "gem" | "ruby" => Self::default().with_ruby_plugin(),
+            // Rails renders ERB views, so it also gets the HTML+ERB plugin.
+            "rails" => Self::default().with_ruby_plugin(true),
+            "sinatra" | "gem" | "ruby" => Self::default().with_ruby_plugin(false),
             _ => Self::default(),
         }
     }
@@ -237,24 +255,41 @@ impl fmt::Display for PrettierConfig {
             write!(f, "]")?;
         }
 
+        if let Some(ruby_single_quote) = self.ruby_single_quote {
+            write!(f, r#", "rubySingleQuote": {}"#, ruby_single_quote)?;
+        }
+
         write!(f, "}}")
     }
 }
 
+/// Pinned npm version for `@prettier/plugin-ruby` (the Ruby formatter plugin).
+const PRETTIER_PLUGIN_RUBY_VERSION: &str = "^4.0.4";
+/// Pinned npm version for `@4az/prettier-plugin-html-erb` (ERB view formatter).
+const PRETTIER_PLUGIN_HTML_ERB_VERSION: &str = "^0.0.7";
+
+/// Base Prettier dev-dependencies shared by every Ruby package.json.
+///
+/// Uses the published, scoped `@prettier/plugin-ruby` package — NOT the
+/// unscoped `prettier-plugin-ruby` GitHub tarball, which does not match the
+/// `.prettierrc` plugin id and leaves Prettier unable to format Ruby.
+fn ruby_prettier_deps() -> HashMap<String, String> {
+    let mut deps = HashMap::new();
+    deps.insert("prettier".to_string(), "^3.0.0".to_string());
+    deps.insert(
+        "@prettier/plugin-ruby".to_string(),
+        PRETTIER_PLUGIN_RUBY_VERSION.to_string(),
+    );
+    deps
+}
+
 impl Default for PackageJson {
     fn default() -> Self {
-        let mut dev_dependencies = HashMap::new();
-        dev_dependencies.insert("prettier".to_string(), "^3.0.0".to_string());
-        dev_dependencies.insert(
-            "prettier-plugin-ruby".to_string(),
-            "github:prettier/plugin-ruby".to_string(),
-        );
-
         Self {
             name: "project".to_string(),
             version: "0.1.0".to_string(),
             description: "A Ruby project".to_string(),
-            dev_dependencies,
+            dev_dependencies: ruby_prettier_deps(),
         }
     }
 }
@@ -267,11 +302,11 @@ impl PackageJson {
                 version: "0.1.0".to_string(),
                 description: "A Rails web application".to_string(),
                 dev_dependencies: {
-                    let mut deps = HashMap::new();
-                    deps.insert("prettier".to_string(), "^3.0.0".to_string());
+                    let mut deps = ruby_prettier_deps();
+                    // Rails renders ERB views; format them with the HTML+ERB plugin.
                     deps.insert(
-                        "prettier-plugin-ruby".to_string(),
-                        "github:prettier/plugin-ruby".to_string(),
+                        "@4az/prettier-plugin-html-erb".to_string(),
+                        PRETTIER_PLUGIN_HTML_ERB_VERSION.to_string(),
                     );
                     deps.insert("eslint".to_string(), "^8.0.0".to_string());
                     deps
@@ -281,27 +316,14 @@ impl PackageJson {
                 name: "sinatra-project".to_string(),
                 version: "0.1.0".to_string(),
                 description: "A Sinatra web application".to_string(),
-                dev_dependencies: {
-                    let mut deps = HashMap::new();
-                    deps.insert("prettier".to_string(), "^3.0.0".to_string());
-                    deps.insert(
-                        "prettier-plugin-ruby".to_string(),
-                        "github:prettier/plugin-ruby".to_string(),
-                    );
-                    deps
-                },
+                dev_dependencies: ruby_prettier_deps(),
             },
             "gem" => Self {
                 name: "ruby-gem".to_string(),
                 version: "0.1.0".to_string(),
                 description: "A Ruby gem".to_string(),
                 dev_dependencies: {
-                    let mut deps = HashMap::new();
-                    deps.insert("prettier".to_string(), "^3.0.0".to_string());
-                    deps.insert(
-                        "prettier-plugin-ruby".to_string(),
-                        "github:prettier/plugin-ruby".to_string(),
-                    );
+                    let mut deps = ruby_prettier_deps();
                     deps.insert("rspec".to_string(), "^3.12.0".to_string());
                     deps
                 },

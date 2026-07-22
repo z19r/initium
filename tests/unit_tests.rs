@@ -1,5 +1,6 @@
 use initium::ConfigGenerator;
 use initium::PackageJson;
+use initium::PrettierConfig;
 use std::path::PathBuf;
 
 #[test]
@@ -260,6 +261,88 @@ fn test_ruby_package_json_valid_json() {
             value.get("devDependencies").is_some(),
             "PackageJson for template '{}' should have 'devDependencies' field",
             template
+        );
+    }
+}
+
+#[test]
+fn test_ruby_package_json_uses_scoped_prettier_plugin() {
+    // Every Ruby template must install the scoped npm package, never the
+    // unscoped GitHub tarball that fails to load under @prettier/plugin-ruby.
+    // The Ruby *default* comes from PackageJson::default(); "default" in
+    // from_template is the Node template.
+    let ruby_jsons = [
+        PackageJson::default().to_string(),
+        PackageJson::from_template("rails").to_string(),
+        PackageJson::from_template("sinatra").to_string(),
+        PackageJson::from_template("gem").to_string(),
+    ];
+    for json in ruby_jsons {
+        assert!(
+            json.contains(r#""@prettier/plugin-ruby":"^4.0.4""#),
+            "Ruby package.json must pin @prettier/plugin-ruby: {json}"
+        );
+        assert!(
+            !json.contains("github:prettier/plugin-ruby"),
+            "Ruby package.json must not use the GitHub tarball: {json}"
+        );
+    }
+}
+
+#[test]
+fn test_rails_package_json_includes_erb_plugin() {
+    let json = PackageJson::from_template("rails").to_string();
+    assert!(json.contains("@4az/prettier-plugin-html-erb"));
+
+    // Non-Rails Ruby templates should not pull in the ERB plugin.
+    for template in ["sinatra", "gem"] {
+        let json = PackageJson::from_template(template).to_string();
+        assert!(
+            !json.contains("@4az/prettier-plugin-html-erb"),
+            "template '{template}' should not include the ERB plugin"
+        );
+    }
+}
+
+#[test]
+fn test_ruby_prettier_config_is_source_of_truth() {
+    // Ruby prettier config: single quotes everywhere + the Ruby plugin.
+    for template in ["ruby", "rails", "sinatra", "gem"] {
+        let config = PrettierConfig::from_template(template).to_string();
+        let parsed: serde_json::Value = serde_json::from_str(&config)
+            .unwrap_or_else(|e| panic!("template '{template}' invalid JSON: {e}: {config}"));
+
+        assert_eq!(parsed["singleQuote"], true, "template '{template}'");
+        assert_eq!(parsed["rubySingleQuote"], true, "template '{template}'");
+        assert!(
+            config.contains("@prettier/plugin-ruby"),
+            "template '{template}' missing Ruby plugin"
+        );
+    }
+}
+
+#[test]
+fn test_rails_prettier_config_includes_erb_plugin() {
+    let rails = PrettierConfig::from_template("rails").to_string();
+    assert!(rails.contains("@4az/prettier-plugin-html-erb"));
+
+    // Sinatra/gem/ruby drive no ERB views, so they skip the ERB plugin.
+    for template in ["sinatra", "gem", "ruby"] {
+        let config = PrettierConfig::from_template(template).to_string();
+        assert!(
+            !config.contains("@4az/prettier-plugin-html-erb"),
+            "template '{template}' should not include the ERB plugin"
+        );
+    }
+}
+
+#[test]
+fn test_non_ruby_prettier_config_has_no_ruby_single_quote() {
+    for template in ["default", "google", "airbnb"] {
+        let config = PrettierConfig::from_template(template).to_string();
+        assert!(
+            !config.contains("rubySingleQuote"),
+            "template '{template}' should not emit rubySingleQuote"
         );
     }
 }
