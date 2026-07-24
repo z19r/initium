@@ -32,7 +32,8 @@ async fn test_generate_basic_config() {
 
     let prettier_ignore =
         std::fs::read_to_string(temp_dir.child(".prettierignore").path()).unwrap();
-    assert!(prettier_ignore.is_empty());
+    assert!(prettier_ignore.contains("node_modules"));
+    assert!(prettier_ignore.contains("coverage"));
 }
 
 #[tokio::test]
@@ -70,16 +71,22 @@ async fn test_generate_ruby_config() {
     assert_eq!(node_version.trim(), "25.9.0");
 
     let package_json = std::fs::read_to_string(temp_dir.child("package.json").path()).unwrap();
-    assert!(package_json.contains("prettier-plugin-ruby"));
-    assert!(package_json.contains("github:prettier/plugin-ruby"));
+    // Scoped npm package, not the unscoped GitHub tarball that fails to load.
+    assert!(package_json.contains("@prettier/plugin-ruby"));
+    assert!(package_json.contains("^4.0.4"));
+    assert!(!package_json.contains("github:prettier/plugin-ruby"));
 
     let prettier_config = std::fs::read_to_string(temp_dir.child(".prettierrc").path()).unwrap();
     assert!(prettier_config.contains("@prettier/plugin-ruby"));
-    assert!(prettier_config.contains("\"singleQuote\": false"));
+    // Prettier is the source of truth: single quotes for both JS and Ruby.
+    assert!(prettier_config.contains("\"singleQuote\": true"));
+    assert!(prettier_config.contains("\"rubySingleQuote\": true"));
 
     let rubocop_config = std::fs::read_to_string(temp_dir.child(".rubocop.yml").path()).unwrap();
     assert!(rubocop_config.contains("TargetRubyVersion: 3.3"));
     assert!(rubocop_config.contains("Max: 120"));
+    // Cops that fight Prettier must be disabled, not enforced.
+    assert!(rubocop_config.contains("Style/StringLiterals:\n  Enabled: false"));
 }
 
 #[tokio::test]

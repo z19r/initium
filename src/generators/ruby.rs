@@ -61,8 +61,20 @@ AllCops:
 Style/Documentation:
   Enabled: false
 
+# Prettier (@prettier/plugin-ruby) is the formatter source of truth.
+# Disable RuboCop cops that fight it — never bend Prettier to satisfy RuboCop.
 Style/StringLiterals:
-  EnforcedStyle: single_quotes
+  Enabled: false
+Style/StringLiteralsInInterpolation:
+  Enabled: false
+Style/TrailingCommaInArguments:
+  Enabled: false
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: false
 
 Layout/LineLength:
   Max: 120
@@ -86,8 +98,20 @@ AllCops:
 Style/Documentation:
   Enabled: false
 
+# Prettier (@prettier/plugin-ruby) is the formatter source of truth.
+# Disable RuboCop cops that fight it — never bend Prettier to satisfy RuboCop.
 Style/StringLiterals:
-  EnforcedStyle: single_quotes
+  Enabled: false
+Style/StringLiteralsInInterpolation:
+  Enabled: false
+Style/TrailingCommaInArguments:
+  Enabled: false
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: false
 
 Layout/LineLength:
   Max: 120
@@ -106,8 +130,20 @@ AllCops:
 Style/Documentation:
   Enabled: false
 
+# Prettier (@prettier/plugin-ruby) is the formatter source of truth.
+# Disable RuboCop cops that fight it — never bend Prettier to satisfy RuboCop.
 Style/StringLiterals:
-  EnforcedStyle: single_quotes
+  Enabled: false
+Style/StringLiteralsInInterpolation:
+  Enabled: false
+Style/TrailingCommaInArguments:
+  Enabled: false
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: false
 
 Layout/LineLength:
   Max: 120
@@ -124,8 +160,20 @@ AllCops:
 Style/Documentation:
   Enabled: false
 
+# Prettier (@prettier/plugin-ruby) is the formatter source of truth.
+# Disable RuboCop cops that fight it — never bend Prettier to satisfy RuboCop.
 Style/StringLiterals:
-  EnforcedStyle: single_quotes
+  Enabled: false
+Style/StringLiteralsInInterpolation:
+  Enabled: false
+Style/TrailingCommaInArguments:
+  Enabled: false
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+Layout/SpaceInsideArrayLiteralBrackets:
+  Enabled: false
 
 Layout/LineLength:
   Max: 120
@@ -170,6 +218,16 @@ rubocop:
     @echo "Running RuboCop..."
     @bundle exec rubocop
 
+# Format with Prettier (source of truth for style)
+fmt:
+    @echo "Formatting with Prettier..."
+    @npx prettier --write .
+
+# Check formatting without writing
+fmt-check:
+    @echo "Checking formatting with Prettier..."
+    @npx prettier --check .
+
 # Database operations
 db:migrate:
     @echo "Running database migrations..."
@@ -206,6 +264,16 @@ rubocop:
     @echo "Running RuboCop..."
     @bundle exec rubocop
 
+# Format with Prettier (source of truth for style)
+fmt:
+    @echo "Formatting with Prettier..."
+    @npx prettier --write .
+
+# Check formatting without writing
+fmt-check:
+    @echo "Checking formatting with Prettier..."
+    @npx prettier --check .
+
 # Install dependencies
 install:
     @echo "Installing Ruby dependencies..."
@@ -238,6 +306,16 @@ rubocop:
     @echo "Running RuboCop..."
     @bundle exec rubocop
 
+# Format with Prettier (source of truth for style)
+fmt:
+    @echo "Formatting with Prettier..."
+    @npx prettier --write .
+
+# Check formatting without writing
+fmt-check:
+    @echo "Checking formatting with Prettier..."
+    @npx prettier --check .
+
 # Install dependencies
 install-deps:
     @echo "Installing Ruby dependencies..."
@@ -259,6 +337,16 @@ test:
 rubocop:
     @echo "Running RuboCop..."
     @bundle exec rubocop
+
+# Format with Prettier (source of truth for style)
+fmt:
+    @echo "Formatting with Prettier..."
+    @npx prettier --write .
+
+# Check formatting without writing
+fmt-check:
+    @echo "Checking formatting with Prettier..."
+    @npx prettier --check .
 
 # Install dependencies
 install:

@@ -141,6 +141,8 @@ impl CommandHandler {
                     .await?;
                 println!("{}", "✅ Git hooks generated successfully!".green());
             }
+
+            self.print_ruby_next_steps();
         }
         Ok(())
     }
@@ -265,6 +267,8 @@ impl CommandHandler {
                     .await?;
                 println!("{}", "✅ Git hooks generated successfully!".green());
             }
+
+            self.print_node_next_steps();
         }
         Ok(())
     }
@@ -619,6 +623,7 @@ impl CommandHandler {
                         "{}",
                         "✅ Ruby configuration files generated successfully!".green()
                     );
+                    self.print_ruby_next_steps();
                 }
             }
             ProjectType::Python => {
@@ -659,6 +664,7 @@ impl CommandHandler {
                         "{}",
                         "✅ Node.js configuration files generated successfully!".green()
                     );
+                    self.print_node_next_steps();
                 }
             }
             ProjectType::Go => {
@@ -799,6 +805,42 @@ impl CommandHandler {
         println!("{}", "🎯 Interactive configuration setup...".blue());
         generator.interactive_setup().await?;
         Ok(())
+    }
+
+    /// Tell the user which commands install the dependencies we just injected.
+    ///
+    /// Initium writes `package.json` (and, for Ruby, expects Gemfile gems) but
+    /// never runs the installers itself, so the generated config is inert until
+    /// the user installs the tooling. Skipped on dry runs.
+    fn print_ruby_next_steps(&self) {
+        if self.dry_run {
+            return;
+        }
+        println!();
+        println!(
+            "{}",
+            "📦 Next steps — install the tooling this config expects:".blue()
+        );
+        println!("   • npm install                    # Prettier + @prettier/plugin-ruby");
+        println!(
+            "   • {}",
+            "bundle add syntax_tree prettier_print --group development,test".yellow()
+        );
+        println!("     (required by @prettier/plugin-ruby to parse Ruby)");
+        println!("   • bundle install");
+        println!("   Then run {} to format.", "just fmt".green());
+    }
+
+    fn print_node_next_steps(&self) {
+        if self.dry_run {
+            return;
+        }
+        println!();
+        println!(
+            "{}",
+            "📦 Next steps — install the tooling this config expects:".blue()
+        );
+        println!("   • npm install");
     }
 
     pub fn handle_list(&self) {
