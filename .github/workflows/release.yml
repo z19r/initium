@@ -96,7 +96,7 @@ jobs:
           cd target/${{ matrix.target }}/release
           tar czf "../../../${BIN_NAME}-${{ matrix.target }}.tar.gz" "${BIN_NAME}"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ env.BIN_NAME }}-${{ matrix.target }}
           path: ${{ env.BIN_NAME }}-${{ matrix.target }}.tar.gz
@@ -108,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
           merge-multiple: true
@@ -124,7 +124,7 @@ jobs:
           git tag ${{ needs.read-version.outputs.tag }}
           git push origin ${{ needs.read-version.outputs.tag }}
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.read-version.outputs.tag }}
           generate_release_notes: true
