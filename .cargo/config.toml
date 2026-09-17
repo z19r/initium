@@ -2,9 +2,6 @@
 # Set the target directory (use absolute path to avoid confusion)
 target-dir = "target"
 
-[target.x86_64-unknown-linux-gnu]
-rustflags = ["-C", "target-cpu=native"]
-
 [profile.dev]
 # Development profile settings
 opt-level = 0
