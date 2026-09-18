@@ -41,6 +41,16 @@ cargo install --path .
 cargo install initium-cli
 ```
 
+### Verifying a release download
+
+Release archives and `SHA256SUMS.txt` are signed with [GitHub build
+provenance attestations](https://docs.github.com/actions/security-guides/using-artifact-attestations).
+Verify a downloaded artifact with the GitHub CLI:
+
+```bash
+gh attestation verify initium-x86_64-unknown-linux-gnu.tar.gz --repo z19r/initium
+```
+
 ## Usage
 
 ### Basic Project Configuration
