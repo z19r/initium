@@ -127,7 +127,7 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-tarpaulin
-        run: cargo install cargo-tarpaulin@0.32.8
+        run: cargo install cargo-tarpaulin
 
       - name: Run tests with coverage
         shell: bash
@@ -179,7 +179,7 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-tarpaulin
-        run: cargo install cargo-tarpaulin@0.32.8
+        run: cargo install cargo-tarpaulin
 
       - name: Generate coverage report
         run: cargo tarpaulin --out Xml --output-dir coverage
