@@ -127,9 +127,15 @@ jobs:
             ${{ runner.os }}-cargo-
 
       - name: Install cargo-tarpaulin
+        if: runner.os == 'Linux'
         run: cargo install cargo-tarpaulin@0.32.8
 
+      - name: Run tests
+        if: runner.os != 'Linux'
+        run: cargo test --all-features
+
       - name: Run tests with coverage
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           mkdir -p coverage
@@ -148,7 +154,7 @@ jobs:
           ls -lh coverage/junit.xml
 
       - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
