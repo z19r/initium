@@ -1,5 +1,7 @@
 # Initium
 
+[![Monitored by Cooper&Wright](https://img.shields.io/badge/monitored%20by-Cooper%26Wright-8a6a3b?style=flat-square)](https://cooperwright.com)
+
 > **Note**: This project was previously published as [`zackstrap`](https://crates.io/crates/zackstrap). Starting with v2.0.0, it is published as [`initium-cli`](https://crates.io/crates/initium-cli).
 
 [![CI/CD Pipeline](https://github.com/zackkitzmiller/initium/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/zackkitzmiller/initium/actions/workflows/ci.yml)
